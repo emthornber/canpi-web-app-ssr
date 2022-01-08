@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title%}Configuration{% endblock title %}
+{% block head %}
+    {{ super() }}
+{% endblock head %}
+{% block content %}
+    <h1>{{ layout_name}} Configuration</h1>
+    <ul>
+        {% for key, value in configuration %}
+        <li>
+            <h5>{{key}} = {{value}}</h5>
+        </li>
+        {% endfor %}
+    </ul>
+    <p>This is an example of a dynamic web page served with Actix and Tera templates.</p>
+{% endblock content %}

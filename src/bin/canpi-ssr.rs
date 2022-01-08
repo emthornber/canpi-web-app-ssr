@@ -28,20 +28,17 @@ async fn main() -> std::io::Result<()> {
     // Start HTTP Server
     let host_port = env::var("HOST_PORT").expect("HOST_PORT address is not set in .env file");
     let ini_path = env::var("INI_FILE").expect("INI_FILE path is not set in .env file");
-    let shared_date = web::Data::new(AppState {
-        layout_name: Mutex::new(hostname::get()?),
-        canpi_cfg: Mutex::new(
-            read_cfg_file(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), ini_path))
-                .expect("Failed to find .ini file")
-        ),
-    });
+    let shared_date = web::Data::new(Mutex::new(AppState {
+        layout_name: hostname::get()?.into_string().unwrap(),
+        canpi_cfg: read_cfg_file(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), ini_path))
+                .expect("Failed to find .ini file"),
+    }));
     let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*")).unwrap();
     let app = move ||
         App::new()
             .data(tera.clone())
             .app_data(shared_date.clone())
-            .configure(general_routes)
-            .configure(config_routes)
+            .configure(configure_routes)
             .service(fs::Files::new("/static", "./canpi-web-app-ssr/static")
                 .show_files_listing());
 
