@@ -1,8 +1,8 @@
+use std::ffi::OsString;
 use std::sync::Mutex;
-use crate::models::WiFiParameters;
+use ini::Ini;
 
 pub struct AppState {
-    pub health_check_response: String,
-    pub visit_count: Mutex<u32>,
-    pub wifi_params: Mutex<WiFiParameters>,
+    pub layout_name: Mutex<OsString>,
+    pub canpi_cfg: Mutex<Ini>,
 }
