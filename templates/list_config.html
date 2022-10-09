@@ -3,14 +3,22 @@
 {% block head %}
     {{ super() }}
 {% endblock head %}
+{% block menu %}
+    {{ super() }}
+{% endblock menu %}
 {% block content %}
+<div style="margin-left: 25%;padding: 1px 16px;height: 1000px;">
     <h1>{{ layout_name}} Configuration</h1>
     <ul>
         {% for key, value in configuration %}
         <li>
-            <h5>{{key}} = {{value}}</h5>
+            {{key}} = {{value}}
         </li>
         {% endfor %}
     </ul>
     <p>This is an example of a dynamic web page served with Actix and Tera templates.</p>
+</div>
 {% endblock content %}
+{% block footer %}
+    {{ super() }}
+{% endblock footer %}

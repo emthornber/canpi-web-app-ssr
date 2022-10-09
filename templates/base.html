@@ -2,17 +2,37 @@
 <html lang="en">
 <head>
     {% block head %}
-    <link rel="stylesheet" href="../static/main.css" />
+    <link rel="stylesheet" href="../static/canpi.css"/>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock title %} - CANPi Server</title>
     {% endblock head %}
 </head>
 <body>
-    <div id="content">{% block content %}{% endblock content %}</div>
-    <div id="footer">
-        {% block footer %}
-        &copy; Copyright 2022 by <a href="mailto:enchanted.systems@btinternet.com">Enchanted Systems Limited</a>
-        {% endblock footer %}
-    </div>
+<header>
+    <h1>CANPi Server</h1>
+</header>
+<div class="container">
+<aside class="sidebar">
+    {% block menu %}
+    <ul class="menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="static">Files</a></li>
+        <li><a href="config">Configuration</a></li>
+    </ul>
+    {% endblock menu %}
+</aside>
+<main class="content">
+    <div class="content">{% block content %}{% endblock content %}</div>
+</main>
+</div>
+<footer>
+    {% block footer %}
+    <p>
+        <img src="../static/merg_logo.png" alt="MERG Logo" width="140" height="55"><br>
+        &copy; Copyright 2022 by
+        <a href="https://www.merg.org.uk/contactus.php">Model Electronic Railway Group</a>
+    </p>
+    {% endblock footer %}
+</footer>
 </body>
 </html>

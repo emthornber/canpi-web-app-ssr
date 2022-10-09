@@ -1,0 +1,124 @@
+:root {
+    font-size: calc(0.5em + 1vw);
+    box-sizing: border-box;
+    --main-bg: AliceBlue;
+    --main-fg: MidnightBlue;
+}
+
+*,
+::before,
+::after {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: Garamond, Georgia, serif;
+}
+
+body * + * {
+    margin-top: 1.5em;
+}
+header {
+    padding: 1em 1.5em;
+    border-right: 0.5em;
+    background-color: var(--main-bg);
+    color: var(--main-fg);
+    text-align: center;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 20%;
+    padding: 1em 1.5em;
+    border-radius: 0.5em;
+}
+
+.content {
+    width: 80%;
+    padding: 1.5em;
+    margin-top: 0;
+    margin-left: 1.5em;
+    border-right: 0.5em;
+}
+
+/* the menu container */
+.menu {
+    overflow: hidden;
+    background-color: AntiqueWhite;
+}
+
+.menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 25%;
+    background-color: #f1f1f1;
+    position: fixed;
+    overflow: auto;
+}
+
+/* menu links */
+.menu li a {
+    float: left;
+    display: block;
+    text-align: center;
+    padding: 0.5em 1em;
+    text-decoration: none;
+}
+
+.menu li a:active {
+    background-color: midnightblue;
+    color: AliceBlue;
+}
+
+/* links - change colour on hover */
+.menu li a:hover:not(a:active) {
+    background-color: BurlyWood;
+    color: AntiqueWhite;
+}
+
+footer {
+    display: block;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--main-bg);
+    color: var(--main-fg);
+    text-align: center;
+}
+
+footer a {
+    font-family: Consolas, Monaco, monospace;
+}
+
+.dark {
+    margin-top: 2em;
+    padding: 1em;
+    background-color: #999;
+    --main-bg: #333;
+    --main-color: #fff;
+}
+
+.panel {
+    font-size: 1rem;
+    padding: 1em;
+    border: 1px solid #999;
+    border-radius: 0.5em;
+    background-color: var(--main-bg);
+    color: var(--main-fg);
+}
+
+.panel > h2 {
+    margin-top: 0;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.panel.large {
+    font-size: 1.2em;
+}
