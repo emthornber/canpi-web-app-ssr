@@ -1,0 +1,103 @@
+:root {
+    font-size: calc(0.5em + 1vw);
+    box-sizing: border-box;
+    --main-bg: AliceBlue;
+    --main-fg: MidnightBlue;
+}
+
+*,
+::before,
+::after {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: Garamond, Georgia, serif;
+}
+
+body * + * {
+    margin-top: 1.5em;
+}
+
+.item1 {
+    grid-area: header;
+    padding: 1em 1.5em;
+    border-right: 0.5em;
+    color: var(--main-fg);
+}
+.item2 {
+    grid-area: menu;
+    margin: 0;
+    padding: 1em;
+    overflow: hidden;
+}
+.item2 ul {
+    list-style-type: none;
+    margin: 0;
+    display: block;
+    padding: 0;
+}
+
+/* menu links */
+.item2 li a {
+    text-align: center;
+    padding: 0.5em;
+    text-decoration: none;
+}
+
+.item2 li a:active {
+    background-color: var(--main-fg);
+    color: var(--main-bg);
+}
+
+/* links - change colour on hover */
+.item2 li a:hover:not(a:active) {
+    background-color: BurlyWood;
+    color: AntiqueWhite;
+}
+
+.item3 {
+    grid-area: content;
+    padding: 1em 1.5em;
+    margin: 0;
+}
+.item4 {
+    grid-area: footer;
+    padding: 1em 1.5em;
+    margin: 0;
+    color: var(--main-fg);
+}
+
+.item4 p { margin: 0 }
+
+.item4 a {
+    font-family: Consolas, Monaco, monospace;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-areas:
+        'menu header header header'
+        'menu content content content'
+        'menu footer footer footer';
+    gap: 0.25em;
+    background-color: var(--main-bg);
+    padding: 0.5em;
+}
+
+.grid-container > div {
+    background-color: var(--main-bg);
+    text-align: center;
+    padding: 1em 0;
+}
+
+.merglogo {
+    float: left;
+    top: 0;
+}
+
+.rpilogo {
+    float: right;
+    top: 0;
+    margin: 0;
+}

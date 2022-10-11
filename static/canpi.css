@@ -28,64 +28,59 @@ header {
 
 .container {
     display: flex;
+    margin: 0;
 }
 
+/* the menu container */
 .sidebar {
     width: 20%;
-    padding: 1em 1.5em;
+    display: block;
+    padding: 1em;
     border-radius: 0.5em;
+    overflow: hidden;
+    background-color: var(--main-bg);
 }
 
 .content {
     width: 80%;
-    padding: 1.5em;
-    margin-top: 0;
-    margin-left: 1.5em;
+    padding: 1em 1.5em;
+    margin: 0;
     border-right: 0.5em;
 }
 
-/* the menu container */
-.menu {
-    overflow: hidden;
-    background-color: AntiqueWhite;
-}
-
-.menu ul {
+.sidebar ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    width: 25%;
-    background-color: #f1f1f1;
-    position: fixed;
-    overflow: auto;
 }
 
 /* menu links */
-.menu li a {
+.sidebar li a {
     float: left;
     display: block;
     text-align: center;
-    padding: 0.5em 1em;
+    padding: 0.5em;
     text-decoration: none;
 }
 
-.menu li a:active {
-    background-color: midnightblue;
-    color: AliceBlue;
+.sidebar li a:active {
+    background-color: var(--main-fg);
+    color: var(--main-bg);
 }
 
 /* links - change colour on hover */
-.menu li a:hover:not(a:active) {
+.sidebar li a:hover:not(a:active) {
     background-color: BurlyWood;
     color: AntiqueWhite;
 }
 
 footer {
+    padding: 1em 1.5em;
     display: block;
-    position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
+    margin: 0;
     background-color: var(--main-bg);
     color: var(--main-fg);
     text-align: center;
