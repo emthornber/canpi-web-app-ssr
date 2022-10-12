@@ -9,7 +9,7 @@
   },
   "node_number": {
     "prompt": "Node Number",
-    "tooltip": "Module Node Number - change your peril",
+    "tooltip": "Module Node Number - change at your peril",
     "current": "4321",
     "default": "4321",
     "format": "[0-9]{1,4}",

@@ -19,11 +19,9 @@ body * + * {
     margin-top: 1.5em;
 }
 
-.empty {
-    grid-area: spaces;
-}
 .item1 {
     grid-area: header;
+    margin: 0;
     padding: 1em 1.5em;
     border-right: 0.5em;
     color: var(--main-fg);
@@ -77,12 +75,23 @@ body * + * {
     font-family: Consolas, Monaco, monospace;
 }
 
+.item5 {
+    grid-area: rlogo;
+    padding: 1em 1.5em;
+    margin: 0;
+}
+
+.item6 {
+    grid-area: mlogo;
+    padding: 1em 1.5em;
+    margin: 0;
+}
 .grid-container {
     display: grid;
     grid-template-areas:
-        'spaces header  header  header'
-        'menu   content content content'
-        'menu   footer  footer  footer';
+        'rlogo header  header  header'
+        'menu  content content content'
+        'mlogo footer  footer  footer';
     gap: 0.25em;
     background-color: var(--main-bg);
     padding: 0.5em;
@@ -95,12 +104,57 @@ body * + * {
 }
 
 .merglogo {
-    float: left;
-    margin-top: 17px;
+    bottom: 0;
+    margin: 0;
 }
 
 .rpilogo {
-    float: right;
     top: 0;
     margin: 0;
+}
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 10em;
+    background-color: var(--main-fg);
+    color: var(--main-bg);
+    text-align: center;
+    padding: 0.5em 0;
+    border-radius: 0.5em;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -5em;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -0.25em;
+    border-width: 0.25em;
+    border-style: solid;
+    border-color: var(--main-fg) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

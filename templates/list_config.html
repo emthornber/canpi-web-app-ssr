@@ -11,9 +11,12 @@
     <h2>{{ layout_name }}</h2>
     <h3>CANPi Configuration</h3>
     <ul>
-        {% for key, value in configuration %}
+        {% for attr in configuration %}
         <li>
-            {{key}} = {{value}}
+            <div class="tooltip">
+                {{attr.prompt}} = {{attr.value}}
+                <span class="tooltiptext">{{attr.tooltip}}</span>
+            </div>
         </li>
         {% endfor %}
     </ul>

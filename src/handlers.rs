@@ -22,7 +22,8 @@ pub async fn status_handler(
 
 #[derive(Serialize, Deserialize)]
 pub struct Attribute {
-    name: String,
+    prompt: String,
+    tooltip: String,
     value: String,
 }
 
@@ -30,10 +31,11 @@ pub async fn display_config(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
-    let mut attributes: HashMap<String, String> = HashMap::new();
+    let mut attributes: Vec<Attribute> = Vec::new();
     let app_state = app_state.lock().unwrap();
     for ( n, v ) in app_state.canpi_cfg.attributes_with_action(ActionBehaviour::Display).iter() {
-        attributes.insert(n.clone(), v.current.clone());
+        let attr = Attribute{ prompt: v.prompt.clone(), tooltip: v.tooltip.clone(), value: v.current.clone() };
+        attributes.push(attr );
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);

@@ -9,36 +9,40 @@
 </head>
 <body>
 <div class="grid-container">
-<div class="item1">
-    <div class="merglogo">
-    <img src="../static/merg_logo.png" alt="MERG Logo" width="140" height="55"><br>
+    <div class="item5">
+        <div class="rpilogo">
+            <img src="../static/rpi.png" alt="Raspberry Pi Logo" width="70" height="90">
+        </div>
     </div>
-    <div class="rpilogo">
-    <img src="../static/rpi.png" alt="Raspberry Pi Logo" width="70" height="90">
+    <div class="item1">
+        <h1>CANPi Server</h1>
     </div>
-    <br>
-    <h1>CANPi Server</h1>
-</div>
-<div class="item2">
-    {% block menu %}
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="static">Files</a></li>
-        <li><a href="config">Configuration</a></li>
-    </ul>
-    {% endblock menu %}
-</div>
-<div class="item3">
-    <div>{% block content %}{% endblock content %}</div>
-</div>
-<div class="item4">
-    {% block footer %}
-    <p>
-        &copy; Copyright 2022 by
-        <a href="https://www.merg.org.uk/contactus.php">Model Electronic Railway Group</a>
-    </p>
-    {% endblock footer %}
-</div>
+    <div class="item2">
+        {% block menu %}
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="static">Files</a></li>
+            <li><a href="config">Configuration</a></li>
+        </ul>
+        {% endblock menu %}
+    </div>
+    <div class="item3">
+        <div>{% block content %}{% endblock content %}</div>
+    </div>
+    <div class="item6">
+        <div class="merglogo">
+            <img src="../static/merg_logo.png" alt="MERG Logo" width="140" height="55"><br>
+        </div>
+    </div>
+    <div class="item4">
+        {% block footer %}
+        <p>
+            <br>
+            &copy; Copyright 2022 by
+            <a href="https://www.merg.org.uk/contactus.php">Model Electronic Railway Group</a>
+        </p>
+        {% endblock footer %}
+    </div>
 </div>
 </body>
 </html>
