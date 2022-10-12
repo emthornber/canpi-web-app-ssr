@@ -19,6 +19,9 @@ body * + * {
     margin-top: 1.5em;
 }
 
+.empty {
+    grid-area: spaces;
+}
 .item1 {
     grid-area: header;
     padding: 1em 1.5em;
@@ -77,9 +80,9 @@ body * + * {
 .grid-container {
     display: grid;
     grid-template-areas:
-        'menu header header header'
-        'menu content content content'
-        'menu footer footer footer';
+        'spaces header  header  header'
+        'menu   content content content'
+        'menu   footer  footer  footer';
     gap: 0.25em;
     background-color: var(--main-bg);
     padding: 0.5em;
@@ -93,7 +96,7 @@ body * + * {
 
 .merglogo {
     float: left;
-    top: 0;
+    margin-top: 17px;
 }
 
 .rpilogo {
