@@ -158,3 +158,23 @@ body * + * {
     visibility: visible;
     opacity: 1;
 }
+
+#attributes {
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#attributes td, #attributes th {
+    border: 1px solid skyblue;
+    padding: 0.5em;
+}
+
+#attributes tr:nth-child(even) { background-color: skyblue; }
+
+#attributes tr:hover { background-color: ivory; }
+/*
+#attributes td { text-align: right; }
+
+#attributes td:nth-child(even) { text-align: left; }
+ */

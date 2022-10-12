@@ -1,28 +1,35 @@
 {% extends "base.html" %}
 {% block title%}Configuration{% endblock title %}
 {% block head %}
-    {{ super() }}
+{{ super() }}
 {% endblock head %}
 {% block menu %}
-    {{ super() }}
+{{ super() }}
 {% endblock menu %}
 {% block content %}
 <div>
     <h2>{{ layout_name }}</h2>
     <h3>CANPi Configuration</h3>
-    <ul>
+    <table id="attributes">
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
         {% for attr in configuration %}
-        <li>
-            <div class="tooltip">
-                {{attr.prompt}} = {{attr.value}}
-                <span class="tooltiptext">{{attr.tooltip}}</span>
-            </div>
-        </li>
+        <tr>
+            <td>
+                <div class="tooltip">
+                    {{attr.prompt}}
+                    <span class="tooltiptext">{{attr.tooltip}}</span>
+                </div>
+            </td>
+            <td>{{attr.value}}</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
     <p>This is an example of a dynamic web page served with Actix and Tera templates.</p>
 </div>
 {% endblock content %}
 {% block footer %}
-    {{ super() }}
+{{ super() }}
 {% endblock footer %}
