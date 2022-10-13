@@ -27,7 +27,7 @@ async fn main() -> std::io::Result<()> {
 
     // Create and load the canpi configuration
     let ini_file= env::var("INI_FILE").expect("INI_FILE path is not set in .env file").to_string();
-    let def_file = (concat!(env!("CARGO_MANIFEST_DIR"), "/static/canpi-config-defn.json").to_string());
+    let def_file = concat!(env!("CARGO_MANIFEST_DIR"), "/static/canpi-config-defn.json").to_string();
     let mut cfg = Cfg::new();
     cfg.load_configuration(ini_file, def_file).expect("Cannot load configuration");
     // Start HTTP Server

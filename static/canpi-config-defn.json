@@ -128,7 +128,7 @@
     "action": "Hide"
   },
   "loglevel": {
-    "prompt": "Set the amount of detail in the log file",
+    "prompt": "Log File Level",
     "tooltip": "Levels are INFO, WARN, DEBUG in increasing verboseness",
     "current": "INFO",
     "default": "INFO",
