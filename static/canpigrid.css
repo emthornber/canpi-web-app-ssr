@@ -173,8 +173,60 @@ body * + * {
 #attributes tr:nth-child(even) { background-color: skyblue; }
 
 #attributes tr:hover { background-color: ivory; }
-/*
-#attributes td { text-align: right; }
 
-#attributes td:nth-child(even) { text-align: left; }
- */
+/* Button used to open the edit form */
+.edit-button {
+    background-color: var(--main-bg);
+    color: var(--main-fg);
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+/* The popup edit form - hidden by default */
+.edit-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border: 0.25em solid OldLace;
+    z-index: 9;
+}
+
+/* Add sty;es to the edit form container */
+.edit-container {
+    padding: 0.5em;
+    background-color: linen;
+}
+
+/* Full-width input fields */
+.edit-container input[type=text] {
+    width: 100%;
+    padding: 1em;
+    margin: 0.33em 0 1.33em 0;
+    border: none;
+    background: var(--main-bg);
+}
+
+.edit-container input[type=text]:focus {
+    background-color: OldLace;
+    color: var(--main-fg);
+    outline: none;
+}
+
+.edit-container .btn {
+    background-color: var(--main-fg);
+    color: var(--main-bg);
+    padding: 1em 1.25em;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.8;
+}
+
+.edit-container .cancel {
+    background-color: red;
+}
+
+.edit-container .btn:hover, .edit-button:hover {
+    opacity: 1;
+}

@@ -33,7 +33,7 @@ pub struct CanPiConfig {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct UpdateCanPiConfig {
+pub struct CanPiConfigForm {
     pub start_event_id: Option<String>,
     pub cangrid_port: Option<String>,
     pub loglevel: Option<String>,
@@ -43,9 +43,9 @@ pub struct UpdateCanPiConfig {
     pub router_ssid: Option<String>,
 }
 
-impl From<web::Json<UpdateCanPiConfig>> for UpdateCanPiConfig {
-    fn from(update_config: web::Json<UpdateCanPiConfig>) -> Self {
-        UpdateCanPiConfig {
+impl From<web::Json<CanPiConfigForm>> for CanPiConfigForm {
+    fn from(update_config: web::Json<CanPiConfigForm>) -> Self {
+        CanPiConfigForm {
             start_event_id: update_config.start_event_id.clone(),
             cangrid_port: update_config.cangrid_port.clone(),
             loglevel: update_config.loglevel.clone(),

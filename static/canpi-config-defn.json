@@ -52,7 +52,7 @@
     "tooltip": "",
     "current": "can0",
     "default": "can0",
-    "format": "[[:alnum:]]{4,}",
+    "format": "[a-zA-Z0-9]{4,}",
     "action": "Hide"
   },
   "cangrid_port": {
@@ -180,7 +180,7 @@
     "tooltip": "WiFi Channel (1 - 13) used in AP mode",
     "current": "6",
     "default": "6",
-    "format": "[0-9]{1,2}",
+    "format": "([1-9])|(1[0-3])",
     "action": "Edit"
   },
   "ap_mode": {
@@ -200,19 +200,27 @@
     "action": "Hide"
   },
   "ap_password": {
-    "prompt": "",
-    "tooltip": "",
-    "current": "0",
-    "default": "0",
-    "format": "[[:alnum:]]{1,}",
-    "action": "Hide"
+    "prompt": "AP Password",
+    "tooltip": "Password of Access Point network",
+    "current": "MyLayout",
+    "default": "MyLayout",
+    "format": "[a-zA-Z0-9]{1,}",
+    "action": "Display"
   },
   "ap_ssid": {
     "prompt": "AP SSID",
     "tooltip": "SSID of Access Point network",
     "current": "HolywellTown",
     "default": "HolywellTown",
-    "format": "[[:alnum:]]{1,}",
+    "format": "[a-zA-Z0-9]{1,}",
+    "action": "Edit"
+  },
+  "ap_network": {
+    "prompt": "AP Network address",
+    "tooltip": "IP address of Access Point network",
+    "current": "192.168.45.1",
+    "default": "192.168.45.1",
+    "format": "([0-9]{1,3}[.]){3}[0-9]{1,3}",
     "action": "Edit"
   },
   "router_ssid": {
@@ -220,7 +228,7 @@
     "tooltip": "SSID of default WiFi network to use",
     "current": "BTWholeHome-VFC",
     "default": "BTWholeHome-VFC",
-    "format": "[[:alnum:]]{1,}",
+    "format": "[a-zA-Z0-9]{1,}",
     "action": "Edit"
   },
   "router_password": {
@@ -228,7 +236,7 @@
     "tooltip": "Password of default WiFi network to use",
     "current": "bKFcLGgAW6fV",
     "default": "bKFcLGgAW6fV",
-    "format": "[[:alnum:]]{1,}",
+    "format": "[a-zA-Z0-9]{1,}",
     "action": "Hide"
   }
 }

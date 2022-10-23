@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title%}Configuration{% endblock title %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+{% block menu %}
+{{ super() }}
+{% endblock menu %}
+{% block content %}
+<div class="edit-popup" id="editForm">
+    <form action="/canpi/update" method="POST" class="edit-container">
+        <h1>Attribute Definition</h1>
+
+        <label for="current"><b>Current</b></label>
+        <input id="current" type="text" placeholder="Enter new current value" name="current" required>
+        <br>
+        <label for="default"><b>Default</b></label>
+        <input id="default" type="text" placeholder="Enter new default value" name="default" required>
+        <br>
+        <button type="submit" class="btn">Submit</button>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+    </form>
+</div>
+<script>
+    function openForm() {
+        document.getElementById("editForm").style.display = "block";
+    }
+
+    function closeForm() {
+        document.getElementById("editForm").style.display = "none";
+    }
+</script>
+{% endblock content %}
+{% block footer %}
+{{ super() }}
+{% endblock footer %}

@@ -6,6 +6,7 @@ use std::sync::Mutex;
 
 use crate::state::AppState;
 use crate::errors::CanPiAppError;
+use crate::models::CanPiConfigForm;
 
 pub async fn status_handler(
     app_state: web::Data<Mutex<AppState>>,
@@ -30,7 +31,7 @@ pub struct AttrLine {
     format: String,
 }
 
-pub async fn display_config(
+pub async fn display_autohs(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
@@ -55,12 +56,12 @@ pub async fn display_config(
     ctx.insert("layout_name", &app_state.layout_name);
     ctx.insert("configuration", &attributes);
     let s = tmpl
-        .render("display_config.html", &ctx)
-        .map_err(|_| CanPiAppError::TeraError("display_config.html".to_string()))?;
+        .render("display_canpi.html", &ctx)
+        .map_err(|_| CanPiAppError::TeraError("display_canpi.html".to_string()))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
-pub async fn edit_config(
+pub async fn edit_autohs(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
@@ -85,8 +86,19 @@ pub async fn edit_config(
     ctx.insert("layout_name", &app_state.layout_name);
     ctx.insert("configuration", &attributes);
     let s = tmpl
-        .render("edit_config.html", &ctx)
-        .map_err(|_| CanPiAppError::TeraError("edit_config.html".to_string()))?;
+        .render("edit_canpi.html", &ctx)
+        .map_err(|_| CanPiAppError::TeraError("edit_canpi.html".to_string()))?;
+    Ok(HttpResponse::Ok().content_type("text/html").body(s))
+}
+
+pub async fn update_autohs(
+    app_state: web::Data<Mutex<AppState>>,
+    tmpl: web::Data<tera::Tera>,
+    params: web::Form<CanPiConfigForm>,
+) -> Result<HttpResponse, Error> {
+    let mut cts = tera::Context::new();
+    let s = "(update_config called)".to_string();
+
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 #[cfg(test)]
