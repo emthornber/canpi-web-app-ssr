@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "autohs_index.html" %}
 {% block title%}Configuration{% endblock title %}
 {% block head %}
 {{ super() }}
@@ -8,8 +8,8 @@
 {% endblock menu %}
 {% block content %}
     <h2>{{ layout_name }}</h2>
-    <h3>CANPi Configuration</h3>
-    <form action="/canpi/update" method="post">
+    <h3>Network Configuration</h3>
+    <form action="/autohs/update" method="post">
         {% for attr in configuration %}
         <label for={{attr.name}}>{{attr.prompt}}:</label>
         <input type="text" id={{attr.name}} name={{attr.name}} pattern="{{attr.format}}" title="{{attr.tooltip}} ({{attr.format}})"

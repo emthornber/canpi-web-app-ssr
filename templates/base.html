@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% block head %}
-    <link rel="stylesheet" href="../static/canpigrid.css"/>
+    <link rel="stylesheet" href="/static/canpigrid.css"/>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock title %} - CANPi Server</title>
     {% endblock head %}
@@ -11,27 +11,24 @@
 <div class="grid-container">
     <div class="item5">
         <div class="rpilogo">
-            <img src="../static/rpi.png" alt="Raspberry Pi Logo" width="70" height="90">
+            <img src="/static/rpi.png" alt="Raspberry Pi Logo" width="70" height="90">
         </div>
     </div>
     <div class="item1">
         <h1>CANPi Server</h1>
     </div>
     <div class="item2">
-        {% block menu %}
         <ul>
-            <li><a href="/canpi">Home</a></li>
-            <li><a href="/canpi/display">Display Only</a></li>
-            <li><a href="/canpi/edit">Editable</a></li>
+            <li><a href="/layout">Home</a></li>
+            {% block menu %}{% endblock menu %}
         </ul>
-        {% endblock menu %}
     </div>
     <div class="item3">
-        <div>{% block content %}{% endblock content %}</div>
+        {% block content %}{% endblock content %}
     </div>
     <div class="item6">
         <div class="merglogo">
-            <img src="../static/merg_logo.png" alt="MERG Logo" width="140" height="55"><br>
+            <img src="/static/merg_logo.png" alt="MERG Logo" width="140" height="55"><br>
         </div>
     </div>
     <div class="item4">
