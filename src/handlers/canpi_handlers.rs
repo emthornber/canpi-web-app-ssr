@@ -41,6 +41,9 @@ pub async fn display_canpi(
     for ( n, v ) in app_state.canpi_cfg.attributes_with_action(ActionBehaviour::Display).iter() {
         ordered_attr.insert(n.clone(), v.clone());
     }
+    for ( n, v ) in app_state.canpi_cfg.attributes_with_action(ActionBehaviour::Edit).iter() {
+        ordered_attr.insert(n.clone(), v.clone());
+    }
     for ( n, v ) in ordered_attr.iter() {
         let attr = AttrLine {
             name: n.clone(),
