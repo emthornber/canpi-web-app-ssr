@@ -4,8 +4,8 @@
     {{ super() }}
 {% endblock head %}
 {% block menu %}
-<li><a href="/layout/autohs">Configure Wireless Access Point</a></li>
-<li><a href="/layout/canpi">Configure CANPiZero</a></li>
+<li><a href='{{ scope_for(scope="autohs") }}'>Configure Wireless Access Point</a></li>
+<li><a href='{{ scope_for(scope="canpi") }}'>Configure CANPiZero</a></li>
 {% endblock menu %}
 {% block content %}
 <div>

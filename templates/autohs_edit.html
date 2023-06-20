@@ -9,14 +9,14 @@
 {% block content %}
     <h2>{{ layout_name }}</h2>
     <h3>Network Configuration</h3>
-    <form action="/autohs/update" method="post">
+    <form action='{{ scope_for(scope="aupdate") }}' method="post">
         {% for attr in configuration %}
         <label for={{attr.name}}>{{attr.prompt}}:</label>
         <input type="text" id={{attr.name}} name={{attr.name}} pattern="{{attr.format}}" title="{{attr.tooltip}} ({{attr.format}})"
                value={{attr.value}}>
         <br>
         {% endfor %}
-        <button type="button" onClick="window.location.reload()">Cancel</button>
+        <button type="button" onClick='location.replace("{{ scope_for(scope="aedit") }}")'>Cancel</button>
         <button type="submit">Submit</button>
     </form>
     <p>This is an example of a dynamic web page served with Actix and Tera templates.</p>

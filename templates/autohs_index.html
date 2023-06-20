@@ -4,8 +4,8 @@
     {{ super() }}
 {% endblock head %}
 {% block menu %}
-<li><a href="/layout/autohs/display">Display</a></li>
-<li><a href="/layout/autohs/edit">Edit</a></li>
+<li><a href='{{ scope_for(scope="adisplay") }}'>Display</a></li>
+<li><a href='{{ scope_for(scope="aedit") }}'>Edit</a></li>
 {% endblock menu %}
 {% block content %}
 <div>

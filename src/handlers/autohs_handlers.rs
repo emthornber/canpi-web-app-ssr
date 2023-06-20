@@ -4,10 +4,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
-use crate::state::AppState;
 use crate::errors::CanPiAppError;
 use crate::models::CanPiConfigForm;
-
+use crate::state::AppState;
 
 #[derive(Serialize, Deserialize)]
 pub struct AttrLine {
@@ -39,13 +38,21 @@ pub async fn display_autohs(
     let mut attributes: Vec<AttrLine> = Vec::new();
     let mut ordered_attr: BTreeMap<String, Attribute> = BTreeMap::new();
     let app_state = app_state.lock().unwrap();
-    for ( n, v ) in app_state.autohs_cfg.attributes_with_action(ActionBehaviour::Display).iter() {
+    for (n, v) in app_state
+        .autohs_cfg
+        .attributes_with_action(ActionBehaviour::Display)
+        .iter()
+    {
         ordered_attr.insert(n.clone(), v.clone());
     }
-    for ( n, v ) in app_state.autohs_cfg.attributes_with_action(ActionBehaviour::Edit).iter() {
+    for (n, v) in app_state
+        .autohs_cfg
+        .attributes_with_action(ActionBehaviour::Edit)
+        .iter()
+    {
         ordered_attr.insert(n.clone(), v.clone());
     }
-    for ( n, v ) in ordered_attr.iter() {
+    for (n, v) in ordered_attr.iter() {
         let attr = AttrLine {
             name: n.clone(),
             prompt: v.prompt.clone(),
@@ -54,7 +61,7 @@ pub async fn display_autohs(
             default: "".to_string(),
             format: "".to_string(),
         };
-        attributes.push(attr );
+        attributes.push(attr);
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
@@ -72,10 +79,14 @@ pub async fn edit_autohs(
     let mut attributes: Vec<AttrLine> = Vec::new();
     let mut ordered_attr: BTreeMap<String, Attribute> = BTreeMap::new();
     let app_state = app_state.lock().unwrap();
-    for ( n, v ) in app_state.autohs_cfg.attributes_with_action(ActionBehaviour::Edit).iter() {
+    for (n, v) in app_state
+        .autohs_cfg
+        .attributes_with_action(ActionBehaviour::Edit)
+        .iter()
+    {
         ordered_attr.insert(n.clone(), v.clone());
     }
-    for ( n, v ) in ordered_attr.iter() {
+    for (n, v) in ordered_attr.iter() {
         let attr = AttrLine {
             name: n.clone(),
             prompt: v.prompt.clone(),
@@ -84,7 +95,7 @@ pub async fn edit_autohs(
             default: v.default.clone(),
             format: v.format.clone(),
         };
-        attributes.push(attr );
+        attributes.push(attr);
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
@@ -100,11 +111,10 @@ pub async fn update_autohs(
     tmpl: web::Data<tera::Tera>,
     params: web::Form<CanPiConfigForm>,
 ) -> Result<HttpResponse, Error> {
-    let mut cts = tera::Context::new();
+    let cts = tera::Context::new();
     let s = "(update_autohs called)".to_string();
 
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 #[cfg(test)]
-mod tests {
-}
+mod tests {}

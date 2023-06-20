@@ -19,7 +19,7 @@
     </div>
     <div class="item2">
         <ul>
-            <li><a href="/layout">Home</a></li>
+            <li><a href='{{ scope_for(scope="root") }}'>Home</a></li>
             {% block menu %}{% endblock menu %}
         </ul>
     </div>

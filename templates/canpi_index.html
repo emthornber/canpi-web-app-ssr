@@ -4,8 +4,8 @@
     {{ super() }}
 {% endblock head %}
 {% block menu %}
-<li><a href="/layout/canpi/display">Display</a></li>
-<li><a href="/layout/canpi/edit">Edit</a></li>
+<li><a href='{{ scope_for(scope="cdisplay") }}'>Display</a></li>
+<li><a href='{{ scope_for(scope="cedit") }}'>Edit</a></li>
 {% endblock menu %}
 {% block content %}
 <div>
