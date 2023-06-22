@@ -4,14 +4,13 @@ use dotenv::dotenv;
 use std::collections::HashMap;
 use std::env;
 use std::sync::Mutex;
+use tera::{from_value, to_value, Function, Tera, Value};
 
 mod errors;
 mod handlers;
 mod models;
 mod routes;
 mod state;
-
-use tera::{from_value, to_value, Function, Tera, Value};
 
 use canpi_config::*;
 use routes::*;

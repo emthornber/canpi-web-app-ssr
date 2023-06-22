@@ -1,10 +1,8 @@
 {% extends "base.html" %}
-{% block title%}Status{% endblock title %}
-{% block head %}
-    {{ super() }}
-{% endblock head %}
+{% block title %}Status{% endblock title %}
+{% block head %}{{ super() }}{% endblock head %}
 {% block menu %}
-<li><a href='{{ scope_for(scope="autohs") }}'>Configure Wireless Access Point</a></li>
+<li><a href='{{ scope_for(scope="autohs") }}'>Configure WAP</a></li>
 <li><a href='{{ scope_for(scope="canpi") }}'>Configure CANPiZero</a></li>
 {% endblock menu %}
 {% block content %}

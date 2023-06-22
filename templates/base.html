@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     {% block head %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Consolas">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" href="/static/canpigrid.css"/>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock title %} - CANPi Server</title>
@@ -28,14 +30,14 @@
     </div>
     <div class="item6">
         <div class="merglogo">
-            <img src="/static/merg_logo.png" alt="MERG Logo" width="140" height="55"><br>
+            <img src="/static/merg_logo_blue.svg" alt="MERG Logo" width="140" height="55"><br>
         </div>
     </div>
     <div class="item4">
         {% block footer %}
         <p>
             <br>
-            &copy; Copyright 2022 by
+            &copy; Copyright {{ now() | date(format="%Y") }} by
             <a href="https://www.merg.org.uk/contactus.php">Model Electronic Railway Group</a>
         </p>
         {% endblock footer %}

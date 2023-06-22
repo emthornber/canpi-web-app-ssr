@@ -12,7 +12,7 @@ actix-web = "3"
 actix-files = "0.5.0"
 # Data serialisation library
 serde = { version = "1", features = ["derive"] }
-tera = "1"
+tera = { version = "1", features = [ "builtins" ] }
 # Other utilities
 bcrypt = "0.10.1"
 chrono = { version = "0.4", features = [ "serde" ] }

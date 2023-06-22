@@ -2,7 +2,7 @@
     font-size: calc(0.5em + 1vw);
     box-sizing: border-box;
     --main-bg: AliceBlue;
-    --main-fg: MidnightBlue;
+    --main-fg: rgb(27, 55, 101);
 }
 
 *,
@@ -12,7 +12,7 @@
 }
 
 body {
-    font-family: Garamond, Georgia, serif;
+    font-family: Roboto, "DejaVu Sans", sans-serif;
 }
 
 body * + * {
@@ -42,7 +42,7 @@ body * + * {
 /* menu links */
 .item2 li a {
     text-align: center;
-    padding: 0.5em;
+    padding: 0;
     text-decoration: none;
 }
 
@@ -53,8 +53,8 @@ body * + * {
 
 /* links - change colour on hover */
 .item2 li a:hover:not(a:active) {
-    background-color: BurlyWood;
-    color: AntiqueWhite;
+    background-color: var(--main-fg);
+    color: var(--main-bg);
 }
 
 .item3 {
@@ -72,7 +72,7 @@ body * + * {
 .item4 p { margin: 0 }
 
 .item4 a {
-    font-family: Consolas, Monaco, monospace;
+    font-family: Consolas, "DejaVu Sans Mono", monospace;
 }
 
 .item5 {
@@ -86,12 +86,16 @@ body * + * {
     padding: 1em 1.5em;
     margin: 0;
 }
+
 .grid-container {
+    min-height: 100vh;
     display: grid;
     grid-template-areas:
-        'rlogo header  header  header'
-        'menu  content content content'
-        'mlogo footer  footer  footer';
+        'rlogo header'
+        'menu  content'
+        'mlogo footer';
+    grid-template-rows: 150px 1fr auto;
+    grid-template-columns: 1fr 3fr;
     gap: 0.25em;
     background-color: var(--main-bg);
     padding: 0.5em;
