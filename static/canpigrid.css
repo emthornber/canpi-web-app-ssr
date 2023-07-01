@@ -19,6 +19,24 @@ body * + * {
     margin-top: 1.5em;
 }
 
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+    font-size: 100%;
+    width: 150px;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
 .item1 {
     grid-area: header;
     margin: 0;
@@ -196,7 +214,7 @@ body * + * {
     z-index: 9;
 }
 
-/* Add sty;es to the edit form container */
+/* Add styles to the edit form container */
 .edit-container {
     padding: 0.5em;
     background-color: linen;

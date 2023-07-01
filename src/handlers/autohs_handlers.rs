@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
-use crate::models::CanPiConfigForm;
+use crate::models::EditAttrForm;
 use crate::state::AppState;
 
 #[derive(Serialize, Deserialize)]
@@ -109,7 +109,7 @@ pub async fn edit_autohs(
 pub async fn update_autohs(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
-    params: web::Form<CanPiConfigForm>,
+    params: web::Form<EditAttrForm>,
 ) -> Result<HttpResponse, Error> {
     let cts = tera::Context::new();
     let s = "(update_autohs called)".to_string();

@@ -1,0 +1,23 @@
+{% extends "canpi_index.html" %}
+{% block title %}Configuration{% endblock title %}
+{% block head %}
+{{ super() }}
+{% endblock head %}
+{% block menu %}
+{{ super() }}
+{% endblock menu %}
+{% block content %}
+<div>
+<h2>{{ layout_name }}</h2>
+<h3>CANPi Definition File Status</h3>
+    {{ status }}
+    <br>
+    <form action='{{ scope_for(scope="cdisplay") }}' method="get">
+        <button type="submit" value="Submit">Continue</button>
+    </form>
+<p>This is an example of a dynamic web page served with Actix using Tera templates.</p>
+</div>
+{% endblock content %}
+{% block footer %}
+{{ super() }}
+{% endblock footer %}

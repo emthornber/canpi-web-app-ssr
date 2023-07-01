@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
         .to_string();
     let mut cfg_autohs = Cfg::new();
     cfg_autohs
-        .load_configuration(autohs_ini_file, def_file.clone())
+        .load_configuration(autohs_ini_file.clone(), def_file.clone())
         .expect("Cannot load autohs configuration");
 
     // Create and load the canpi configuration
@@ -53,7 +53,7 @@ async fn main() -> std::io::Result<()> {
         .to_string();
     let mut cfg_canpi = Cfg::new();
     cfg_canpi
-        .load_configuration(canpi_ini_file, def_file.clone())
+        .load_configuration(canpi_ini_file.clone(), def_file.clone())
         .expect("Cannot load canpi configuration");
 
     // Start HTTP Server
@@ -61,6 +61,8 @@ async fn main() -> std::io::Result<()> {
     let shared_date = web::Data::new(Mutex::new(AppState {
         layout_name: hostname::get()?.into_string().unwrap(),
         project_id: "{project_id}".to_string(),
+        autohs_ini_file: autohs_ini_file.clone(),
+        canpi_ini_file: canpi_ini_file.clone(),
         autohs_cfg: cfg_autohs,
         canpi_cfg: cfg_canpi,
     }));

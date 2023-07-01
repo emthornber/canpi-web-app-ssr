@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title%}CAN Bus Interface{% endblock title %}
+{% block title %}CAN Bus Interface{% endblock title %}
 {% block head %}
     {{ super() }}
 {% endblock head %}
 {% block menu %}
 <li><a href='{{ scope_for(scope="cdisplay") }}'>Display</a></li>
-<li><a href='{{ scope_for(scope="cedit") }}'>Edit</a></li>
+<li><a href='{{ scope_for(scope="csave") }}'>Save</a></li>
 {% endblock menu %}
 {% block content %}
 <div>

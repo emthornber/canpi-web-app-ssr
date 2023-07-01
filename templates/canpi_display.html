@@ -1,5 +1,5 @@
 {% extends "canpi_index.html" %}
-{% block title%}Configuration{% endblock title %}
+{% block title %}Configuration{% endblock title %}
 {% block head %}
 {{ super() }}
 {% endblock head %}
@@ -14,16 +14,31 @@
         <tr>
             <th>Name</th>
             <th>Value</th>
+            <th>Type</th>
         </tr>
         {% for attr in configuration %}
         <tr>
             <td>
+                {% if attr.editable %}
                 <div class="tooltip">
+                {% endif %}
                     {{attr.prompt}}
+                {% if attr.editable %}
                     <span class="tooltiptext">{{attr.tooltip}}</span>
                 </div>
+                {% endif %}
             </td>
             <td>{{attr.value}}</td>
+            <td>
+                {% if attr.editable %}
+                    <form action='{{ scope_for(scope="cedit") }}' method="get">
+                    <input type="hidden" id="{{attr.name}}" name="name" value={{attr.name}}>
+                    <input type="submit" value="Edit">
+                    </form>
+                {% else %}
+                    (view only)
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
