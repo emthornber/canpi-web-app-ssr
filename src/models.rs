@@ -17,3 +17,8 @@ impl From<web::Json<EditAttrForm>> for EditAttrForm {
         }
     }
 }
+
+#[derive(Debug, Deserialize)]
+pub struct AttrNameText {
+    pub name: String,
+}

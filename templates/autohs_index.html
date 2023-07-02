@@ -5,11 +5,10 @@
 {% endblock head %}
 {% block menu %}
 <li><a href='{{ scope_for(scope="adisplay") }}'>Display</a></li>
-<li><a href='{{ scope_for(scope="aedit") }}'>Edit</a></li>
+<li><a href='{{ scope_for(scope="asave") }}'>Save</a></li>
 {% endblock menu %}
 {% block content %}
 <div>
     <h1>Welcome to {{ layout_name }} layout</h1>
-    <p>This is an example of a dynamic web page served with Actix and Tera templates.</p>
 </div>
 {% endblock content %}

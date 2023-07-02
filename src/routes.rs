@@ -19,14 +19,16 @@ lazy_static! {
         let mut map = HashMap::new();
         map.insert("root", format!("{LAYOUT}"));
         map.insert("canpi", format!("{LAYOUT}{CANPI}"));
-        map.insert("confirm", format!("{LAYOUT}{CANPI}{CONFIRM}"));
+        map.insert("cconfirm", format!("{LAYOUT}{CANPI}{CONFIRM}"));
         map.insert("cdisplay", format!("{LAYOUT}{CANPI}{DISPLAY}"));
         map.insert("cedit", format!("{LAYOUT}{CANPI}{EDIT}"));
         map.insert("csave", format!("{LAYOUT}{CANPI}{SAVE}"));
         map.insert("cupdate", format!("{LAYOUT}{CANPI}{UPDATE}"));
         map.insert("autohs", format!("{LAYOUT}{AUTOHS}"));
+        map.insert("aconfirm", format!("{LAYOUT}{AUTOHS}{CONFIRM}"));
         map.insert("adisplay", format!("{LAYOUT}{AUTOHS}{DISPLAY}"));
         map.insert("aedit", format!("{LAYOUT}{AUTOHS}{EDIT}"));
+        map.insert("asave", format!("{LAYOUT}{AUTOHS}{SAVE}"));
         map.insert("aupdate", format!("{LAYOUT}{AUTOHS}{UPDATE}"));
         map
     };
@@ -45,7 +47,6 @@ pub fn canpi_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope(ROUTE_DATA["canpi"].as_str())
             .service(web::resource("").route(web::get().to(status_canpi)))
-            .service(web::resource(CONFIRM).route(web::get().to(confirm_canpi)))
             .service(web::resource(DISPLAY).route(web::get().to(display_canpi)))
             .service(web::resource(EDIT).route(web::get().to(edit_canpi)))
             .service(web::resource(SAVE).route(web::get().to(save_canpi)))
@@ -59,6 +60,7 @@ pub fn autohs_routes(cfg: &mut web::ServiceConfig) {
             .service(web::resource("").route(web::get().to(status_autohs)))
             .service(web::resource(DISPLAY).route(web::get().to(display_autohs)))
             .service(web::resource(EDIT).route(web::get().to(edit_autohs)))
+            .service(web::resource(SAVE).route(web::get().to(save_autohs)))
             .service(web::resource(UPDATE).route(web::post().to(update_autohs))),
     );
 }

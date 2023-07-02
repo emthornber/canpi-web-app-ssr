@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
-use crate::models::EditAttrForm;
+use crate::models::{AttrNameText, EditAttrForm};
 use crate::state::AppState;
 
 #[derive(Serialize, Deserialize)]
@@ -76,15 +76,10 @@ pub async fn display_canpi(
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
-#[derive(Debug, Deserialize)]
-pub struct CanpiAttrName {
-    name: String,
-}
-
 pub async fn edit_canpi(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
-    attr_id: web::Query<CanpiAttrName>,
+    attr_id: web::Query<AttrNameText>,
 ) -> Result<HttpResponse, Error> {
     let mut attributes: Vec<AttrLine> = Vec::new();
     let app_state = app_state.lock().unwrap();
@@ -118,10 +113,10 @@ pub async fn update_canpi(
     tmpl: web::Data<tera::Tera>,
     params: web::Form<EditAttrForm>,
 ) -> Result<HttpResponse, Error> {
-    let cts = tera::Context::new();
     let attr_name = params.name.clone();
     let attr_prompt = params.prompt.clone();
     let current_value = params.value.clone();
+    let mut s = "(update_canpi called)".to_string();
 
     let mut app_state = app_state.lock().unwrap();
     let attr = app_state.canpi_cfg.read_attribute(attr_name.clone());
@@ -133,22 +128,12 @@ pub async fn update_canpi(
         ctx.insert("layout_name", &app_state.layout_name);
         ctx.insert("attr_prompt", &attr_prompt);
         ctx.insert("current_value", &current_value);
-        let s = tmpl
+        s = tmpl
             .render("canpi_confirm.html", &ctx)
             .map_err(|_| CanPiAppError::TeraError("canpi_confirm.html".to_string()))?;
-        Ok(HttpResponse::Ok().content_type("text/html").body(s))
     } else {
-        let s = format!("Key {} not in canpi configuration", attr_name);
-        Ok(HttpResponse::Ok().content_type("text/html").body(s))
+        s = format!("Key {} not in canpi configuration", attr_name);
     }
-}
-
-pub async fn confirm_canpi(
-    app_state: web::Data<Mutex<AppState>>,
-    tmpl: web::Data<tera::Tera>,
-) -> Result<HttpResponse, Error> {
-    let mut s = "(confirm_canpi() called)".to_string();
-
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 

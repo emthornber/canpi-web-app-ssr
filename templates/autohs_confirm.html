@@ -1,4 +1,4 @@
-{% extends "canpi_index.html" %}
+{% extends "autohs_index.html" %}
 {% block title %}Configuration{% endblock title %}
 {% block head %}
 {{ super() }}
@@ -9,7 +9,7 @@
 {% block content %}
 <div>
 <h2>{{ layout_name }}</h2>
-<h3>Updated CANPi Attribute</h3>
+<h3>Updated AUTOHS Attribute</h3>
     <table id="attributes">
         <tr>
             <th>Name</th>
@@ -20,7 +20,7 @@
             <td>{{current_value}}</td>
         </tr>
     </table>
-    <form action='{{ scope_for(scope="cdisplay") }}' method="get">
+    <form action='{{ scope_for(scope="adisplay") }}' method="get">
         <button type="submit" value="Submit">Continue</button>
     </form>
 </div>

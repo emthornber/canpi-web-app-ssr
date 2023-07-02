@@ -7,19 +7,21 @@
 {{ super() }}
 {% endblock menu %}
 {% block content %}
-    <h2>{{ layout_name }}</h2>
-    <h3>Network Configuration</h3>
+<h2>{{ layout_name }}</h2>
+<h3>Edit Network Attribute</h3>
+{% for attr in configuration %}
     <form action='{{ scope_for(scope="aupdate") }}' method="post">
-        {% for attr in configuration %}
-        <label for={{attr.name}}>{{attr.prompt}}:</label>
-        <input type="text" id={{attr.name}} name={{attr.name}} pattern="{{attr.format}}" title="{{attr.tooltip}} ({{attr.format}})"
+        <label for="{{attr.name}}-value">{{attr.prompt}}:</label>
+        <input type="text" id="{{attr.name}}-value" name="value" pattern="{{attr.format}}"
+	       title="{{attr.tooltip}} ({{attr.format}})"
                value={{attr.value}}>
+            <input type="hidden" id="{{attr.name}}-name" name="name" value={{attr.name}}>
+            <input type="hidden" id="{{attr.name}}-prompt" name="prompt" value="{{attr.prompt}}">
         <br>
-        {% endfor %}
-        <button type="button" onClick='location.replace("{{ scope_for(scope="aedit") }}")'>Cancel</button>
-        <button type="submit">Submit</button>
+        <input type="button" onclick='location.replace("{{ scope_for(scope="adisplay") }}")' value="Cancel">
+        <input type="submit" value="Update">
     </form>
-    <p>This is an example of a dynamic web page served with Actix and Tera templates.</p>
+{% endfor %}
 {% endblock content %}
 {% block footer %}
 {{ super() }}
