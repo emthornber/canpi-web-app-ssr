@@ -4,7 +4,7 @@ use std::path::Path;
 #[macro_export]
 macro_rules! pkg_name {
     () => {
-        env!("CARGO_PKG_NAME")
+        env!("CARGO_BIN_NAME")
     };
 }
 

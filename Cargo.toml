@@ -3,8 +3,15 @@ name = "canpi-web-app-ssr"
 version = "0.1.0"
 authors = ["Mark Thornber <mark.thornber@gmail.com>"]
 edition = "2018"
+license = "GPL-3.0-0r-later"
+readme = "README.md"
+description = "A configuration web application"
+repository = "https://github.com/emthornber/CANPiServer"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "canpi-ssr"
+path = "src/main.rs"
 
 [dependencies]
 #canpi-config = { git = "https://github.com/emthornber/canpi-config.git", branch = "lgtrunk" }
@@ -27,3 +34,27 @@ futures-util = "0.3.28"
 [dev-dependencies]
 actix-rt = "2.5.0"
 cargo-deb = "1.39.3"
+
+[package.metadata.deb]
+maintainer = "Mark Thornber <mark.thornber@gmail.com>"
+copyright = "2023, Mark Thornber <mark.thornber@gmail.com>"
+extended-description = """\
+Webserver for the maintenance of AutoHotspot and CanPi configurations"""
+priority = "required"
+maintainer-scripts = "debianpkg/"
+assets = [
+    # binary
+    ["target/release/canpi-ssr", "usr/local/canpiserver/bin/", "755"],
+    # assets
+    ["static/*", "usr/local/canpiserver/canpi-ssr/static/", "644"],
+    ["templates/*", "usr/local/canpiserver/canpi-ssr/templates/", "644"],
+    # example configuration files
+    ["../scratch/autohs_example.cfg", "usr/local/canpiserver/scratch/", "644"],
+    ["../scratch/canpi_example.cfg", "usr/local/canpiserver/scratch/", "644"],
+    # service environment variables
+    ["debianpkg/canpi-ssr.conf", "etc/systemd/system/canpi-ssr.service.d/", "644"]
+]
+conf-files = [ "static/canpi-config-defn.json"]
+systemd-units = { unit-name = "canpi-ssr", unit-scripts = "debianpkg/", enable = true, start = true }
+
+
