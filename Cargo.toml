@@ -6,7 +6,7 @@ edition = "2018"
 license = "GPL-3.0-0r-later"
 readme = "README.md"
 description = "A configuration web application"
-repository = "https://github.com/emthornber/CANPiServer"
+repository = "https://github.com/emthornber/capnpi-web-app-ssr"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [[bin]]
@@ -49,8 +49,8 @@ assets = [
     ["static/*", "usr/local/canpiserver/canpi-ssr/static/", "644"],
     ["templates/*", "usr/local/canpiserver/canpi-ssr/templates/", "644"],
     # example configuration files
-    ["../scratch/autohs_example.cfg", "usr/local/canpiserver/scratch/", "644"],
-    ["../scratch/canpi_example.cfg", "usr/local/canpiserver/scratch/", "644"],
+    ["scratch/autohs_example.cfg", "usr/local/canpiserver/scratch/", "644"],
+    ["scratch/canpi_example.cfg", "usr/local/canpiserver/scratch/", "644"],
     # service environment variables
     ["debianpkg/canpi-ssr.conf", "etc/systemd/system/canpi-ssr.service.d/", "644"]
 ]
