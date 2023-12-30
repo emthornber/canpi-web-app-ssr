@@ -26,7 +26,7 @@ pub struct CanpiConfig {
 }
 
 impl CanpiConfig {
-    /// Creates a new instance  of the structure
+    /// Creates a new instance of the structure
     ///
     /// The contents of the EV CPS_HOME is used with the static text above to create path strings
     /// for items.

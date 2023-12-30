@@ -150,7 +150,7 @@ pub async fn save_autohs(
     {
         status_text = format!("Configuration file {} updated", &autohs_ini_file).to_string();
     } else {
-        status_text = format!("Failed to updated {}", &autohs_ini_file).to_string();
+        status_text = format!("Failed to update {}", &autohs_ini_file).to_string();
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
