@@ -687,7 +687,7 @@ dependencies = [
 
 [[package]]
 name = "canpi-web-app-ssr"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "actix-files",
  "actix-rt 2.9.0",

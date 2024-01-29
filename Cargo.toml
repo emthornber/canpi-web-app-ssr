@@ -1,7 +1,7 @@
 [package]
 name = "canpi-web-app-ssr"
-version = "0.1.0"
-authors = ["Mark Thornber <mark.thornber@gmail.com>"]
+version = "0.1.1"
+authors = ["Mark Thornber <mark.thornber@merg.org.uk>"]
 edition = "2018"
 license = "GPL-3.0-0r-later"
 readme = "README.md"
@@ -36,10 +36,10 @@ actix-rt = "2.5.0"
 cargo-deb = "1.39.3"
 
 [package.metadata.deb]
-maintainer = "Mark Thornber <mark.thornber@gmail.com>"
-copyright = "2023, Mark Thornber <mark.thornber@gmail.com>"
+maintainer = "Mark Thornber <mark.thornber@merg.org.uk>"
+copyright = "2023, Mark Thornber <mark.thornber@merg.org.uk>"
 extended-description = """\
-Webserver for the maintenance of AutoHotspot and CanPi configurations"""
+Webserver for the maintenance of Hotspot and CanPi configurations"""
 priority = "required"
 maintainer-scripts = "debianpkg/"
 assets = [
@@ -49,7 +49,7 @@ assets = [
     ["static/*", "usr/local/canpiserver/canpi-ssr/static/", "644"],
     ["templates/*", "usr/local/canpiserver/canpi-ssr/templates/", "644"],
     # example configuration files
-    ["scratch/autohs_example.cfg", "usr/local/canpiserver/scratch/", "644"],
+    ["scratch/hotspot_example.cfg", "usr/local/canpiserver/scratch/", "644"],
     ["scratch/canpi_example.cfg", "usr/local/canpiserver/scratch/", "644"],
     # service environment variables
     ["debianpkg/canpi-ssr.conf", "etc/systemd/system/canpi-ssr.service.d/", "644"]
