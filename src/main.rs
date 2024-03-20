@@ -1,7 +1,10 @@
 use actix_files as fs;
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
+use errors::CanPiAppError;
+use log;
 use std::collections::HashMap;
+use std::path::Path;
 use std::process;
 use std::sync::Mutex;
 use tera::{from_value, to_value, Function, Tera, Value};
@@ -15,7 +18,7 @@ mod validation;
 
 use canpi_config::*;
 use routes::*;
-use state::AppState;
+use state::{AppState, Topic, TopicHash};
 use validation::*;
 
 fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Function + 'a {
@@ -32,43 +35,66 @@ fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Functio
     )
 }
 
+fn convert_package_to_topic( pkg: &Package) -> Result<Topic, CanPiAppError> {
+    let ini_path = pkg.cfg_path.clone() + "/" + pkg.ini_file.as_str();
+    if Path::new(&ini_path).is_file() {
+        let json_path = pkg.cfg_path + "/" + pkg.json_file.as_str();
+        if Path::new(&json_path).is_file() {
+            let mut cfg = Cfg::new();
+            cfg.load_configuration(json_path);
+            let topic = Topic {
+                ini_file_path: ini_path,
+                attr_defn: cfg,
+            };
+            return Ok(topic);
+        } else {
+            return Err(CanPiAppError::NotFound(
+                format!("Json file '{json_path}' not found"),
+            ));
+        }
+    } else {
+        return Err(CanPiAppError::NotFound(
+            format!("Configuration file '{ini_path}' not found"),
+        ));
+    }
+}
+
+fn load_pkg_cfgs(pkg_defn: &Pkg) -> TopicHash {
+    let mut topics = TopicHash::new();
+    if let Some(pkg_hash) = pkg_defn.packages {
+        for (k, v) in pkg_hash.iter() {
+            if let Ok(attr) = convert_package_to_topic(v) {
+                topics.insert(k.to_string(), attr);
+            }
+        } 
+    }
+    if topics.is_empty() {
+        log::warn!("No package attribute definitions found");
+    }
+    topics
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     if let Ok(canpi_cfg) = CanpiConfig::new() {
-        // Configuration file names
-        let autohs_file = canpi_cfg.autohs_ini_path.unwrap();
-        let canpi_file = canpi_cfg.canpi_ini_path.unwrap();
-        // WEbpage formatting files
+        // Webpage formatting files
         let static_path = canpi_cfg.static_path.unwrap();
-        // Create and load the autohs configuration using the JSON schema file
-        let mut cfg_autohs = Cfg::new();
-        cfg_autohs
-            .load_configuration(autohs_file.clone(), canpi_cfg.config_path.clone().unwrap())
-            .expect("Cannot load autohs configuration");
-
-        // Create and load the canpi configuration using the JSON schema file
-        let mut cfg_canpi = Cfg::new();
-        cfg_canpi
-            .load_configuration(canpi_file.clone(), canpi_cfg.config_path.clone().unwrap())
-            .expect("Cannot load canpi configuration");
 
         // Start HTTP Server
         let host_port = canpi_cfg.host_port.unwrap();
-        let shared_date = web::Data::new(Mutex::new(AppState {
+        let shared_data = web::Data::new(Mutex::new(AppState {
             layout_name: hostname::get()?.into_string().unwrap(),
             project_id: "{project_id}".to_string(),
-            autohs_ini_file: autohs_file.clone(),
-            canpi_ini_file: canpi_file.clone(),
-            autohs_cfg: cfg_autohs,
-            canpi_cfg: cfg_canpi,
+            // Create and load the configurations using the JSON schema files
+            topics: load_pkg_cfgs(canpi_cfg.pkg_defn),
         }));
         let mut tera = Tera::new(canpi_cfg.template_path.unwrap().as_str()).unwrap();
         tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
         let app = move || {
             App::new()
                 .data(tera.clone())
-                .app_data(shared_date.clone())
+                .app_data(shared_data.clone())
                 .configure(autohs_routes)
                 .configure(canpi_routes)
                 .configure(general_routes)

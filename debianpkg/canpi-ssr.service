@@ -18,12 +18,12 @@ After=multi-user.target
 # Consult the documentantion for types (https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=) other options.
 Type=simple
 # Command with arguments to invoke when the unit is activated.
-ExecStart=/usr/local/canpiserver/bin/canpi-ssr
+ExecStart=/usr/local/bin/canpi-ssr
 # Command with arguments to invoke when the unit is deactivated.
 #ExecStop=
 # Configures under what conditions the unit will be restarted.
 Restart=on-failure
-Environment="CPS_HOME=/usr/local/canpiserver"
+Environment="CPSSR_HOME=/usr/local/etc/canpi-ssr"
 
 [Install]
 # A list of units who when activated will try and activate this unit

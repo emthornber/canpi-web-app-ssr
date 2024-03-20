@@ -1,0 +1,12 @@
+{
+    "AutoHotSpot" : {
+        "cfg_path" : "/usr/local/etc/autohs",
+        "ini_file" : "hotspot.conf",
+        "json_file" : "hotspot.json"
+    },
+    "CANPiServer" : {
+        "cfg_path" : "/usr/local/etc/canpi",
+        "ini_file" : "canpi.cfg",
+        "json_file" : "canpi.json"
+    }
+}
