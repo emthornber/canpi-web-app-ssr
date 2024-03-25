@@ -10,12 +10,11 @@ macro_rules! pkg_name {
     };
 }
 
-const CANPI_SSR_DIR: &str = pkg_name!();
+//const CANPI_SSR_DIR: &str = pkg_name!();
 //const CANPI_SSR_DIR: &str = env!("CARGO_PKG_NAME");
 const CFGFILE: &str = "/canpi-ssr.json";
 const STATIC: &str = "/static";
 const TEMPLATE: &str = "/templates/**/*";
-
 
 /// Structure that holds configuration items expanded from EVs and static text
 pub struct CanpiConfig {
@@ -58,17 +57,18 @@ impl CanpiConfig {
                     template_path: None,
                     pkg_defn: None,
                 };
-                
+
                 let cfile = cps_home.clone() + "/" + STATIC + CFGFILE;
                 if Path::new(&cfile).is_file() {
                     cfg.config_path = Some(cfile.clone());
                     let mut pkg = Pkg::new();
-                    pkg.load_packages(cfile).expect("Cannot load package configurations");
+                    pkg.load_packages(cfile)
+                        .expect("Cannot load package configurations");
                     cfg.pkg_defn = Some(pkg);
                 } else {
-                    return Err(CanPiAppError::NotFound(
-                        format!("Configuration file '{cfile}' not found"),
-                    ));
+                    return Err(CanPiAppError::NotFound(format!(
+                        "Configuration file '{cfile}' not found"
+                    )));
                 }
 
                 if let Ok(port) = std::env::var("HOST_PORT") {

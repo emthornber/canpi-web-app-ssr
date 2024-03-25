@@ -20,10 +20,10 @@ pub struct AttrLine {
     editable: bool,
 }
 
-pub fn get_attr_defns(app_state: &AppState) -> Result<Cfg, Error> {
+pub fn get_attr_defns(app_state: &mut AppState) -> Result<&mut Cfg, Error> {
     if let Some(title) = &app_state.current_topic {
-        if let Some(topic) = app_state.topics.get(title) {
-            return Ok(topic.attr_defn);
+        if let Some(topic) = app_state.topics.get_mut(title) {
+            return Ok(&mut topic.attr_defn);
         }
     }
     Err(CanPiAppError::NotFound(
@@ -63,8 +63,8 @@ pub async fn display_topic(
 ) -> Result<HttpResponse, Error> {
     let mut attributes: Vec<AttrLine> = Vec::new();
     let mut ordered_attr: BTreeMap<String, Attribute> = BTreeMap::new();
-    let app_state = app_state.lock().unwrap();
-    let attr_defn = get_attr_defns(&app_state)?;
+    let mut app_state = app_state.lock().unwrap();
+    let attr_defn = get_attr_defns(&mut app_state)?;
     for (n, v) in attr_defn
         .attributes_with_action(ActionBehaviour::Display)
         .iter()
@@ -78,7 +78,6 @@ pub async fn display_topic(
         ordered_attr.insert(n.clone(), v.clone());
     }
     for (n, v) in ordered_attr.iter() {
-        let editable = if v.action == Edit { true } else { false };
         let attr = AttrLine {
             name: n.clone(),
             prompt: v.prompt.clone(),
@@ -86,7 +85,7 @@ pub async fn display_topic(
             value: v.current.clone(),
             default: "".to_string(),
             format: "".to_string(),
-            editable: editable,
+            editable: v.action == Edit,
         };
         attributes.push(attr);
     }
@@ -106,8 +105,8 @@ pub async fn edit_topic(
     attr_id: web::Query<AttrNameText>,
 ) -> Result<HttpResponse, Error> {
     let mut attributes: Vec<AttrLine> = Vec::new();
-    let app_state = app_state.lock().unwrap();
-    let attr_defn = get_attr_defns(&app_state)?;
+    let mut app_state = app_state.lock().unwrap();
+    let attr_defn = get_attr_defns(&mut app_state)?;
     let attribute = attr_defn.read_attribute(attr_id.name.clone());
     if let Some(v) = attribute {
         let attr = AttrLine {
@@ -144,8 +143,8 @@ pub async fn update_topic(
     let current_value = params.value.clone();
     let mut _s = "(update_topic called)".to_string();
 
-    let app_state = app_state.lock().unwrap();
-    let mut attr_defn = get_attr_defns(&app_state)?;
+    let mut app_state = app_state.lock().unwrap();
+    let attr_defn = get_attr_defns(&mut app_state)?;
     let attr = attr_defn.read_attribute(attr_name.clone());
     if let Some(aref) = attr {
         let mut a = aref.clone();
@@ -170,9 +169,9 @@ pub async fn save_topic(
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
     let mut _status_text = "(save_topic() called)".to_string();
-    let app_state = app_state.lock().unwrap();
-    let attr_defn = get_attr_defns(&app_state)?;
+    let mut app_state = app_state.lock().unwrap();
     let topic_ini_file = get_ini_file_path(&app_state)?;
+    let attr_defn = get_attr_defns(&mut app_state)?;
     if let Ok(()) = attr_defn.write_cfg_file(&topic_ini_file, Some(true)) {
         _status_text = format!("Configuration file {} updated", &topic_ini_file).to_string();
     } else {

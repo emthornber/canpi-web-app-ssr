@@ -9,7 +9,7 @@ use super::topic_handlers::status_topic;
 
 #[derive(Deserialize)]
 // Structure to hold the title information extracted from URL
-struct Title {
+pub struct Title {
     topic: String,
 }
 

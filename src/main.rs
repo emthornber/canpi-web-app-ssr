@@ -41,7 +41,7 @@ fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
         let json_path = pkg.cfg_path.clone() + "/" + pkg.json_file.as_str();
         if Path::new(&json_path).is_file() {
             let mut cfg = Cfg::new();
-            cfg.load_configuration(ini_path.clone(), json_path);
+            let _ = cfg.load_configuration(ini_path.clone(), json_path);
             let topic = Topic {
                 ini_file_path: ini_path,
                 attr_defn: cfg,
