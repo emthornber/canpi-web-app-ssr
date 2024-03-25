@@ -38,10 +38,10 @@ fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Functio
 fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
     let ini_path = pkg.cfg_path.clone() + "/" + pkg.ini_file.as_str();
     if Path::new(&ini_path).is_file() {
-        let json_path = pkg.cfg_path + "/" + pkg.json_file.as_str();
+        let json_path = pkg.cfg_path.clone() + "/" + pkg.json_file.as_str();
         if Path::new(&json_path).is_file() {
             let mut cfg = Cfg::new();
-            cfg.load_configuration(ini_path, json_path);
+            cfg.load_configuration(ini_path.clone(), json_path);
             let topic = Topic {
                 ini_file_path: ini_path,
                 attr_defn: cfg,
@@ -61,7 +61,7 @@ fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
 
 fn load_pkg_cfgs(pkg_defn: &Pkg) -> TopicHash {
     let mut topics = TopicHash::new();
-    if let Some(pkg_hash) = pkg_defn.packages {
+    if let Some(pkg_hash) = &pkg_defn.packages {
         for (k, v) in pkg_hash.iter() {
             if let Ok(attr) = convert_package_to_topic(v) {
                 topics.insert(k.to_string(), attr);

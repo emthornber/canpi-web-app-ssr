@@ -8,7 +8,7 @@
 {% endblock menu %}
 {% block content %}
 <h2>{{ layout_name }}</h2>
-<h3>Edit CANPi Attribute</h3>
+<h3>Edit {{ topic_title }} Attribute</h3>
 {% for attr in configuration %}
         <form action='{{ scope_for(scope="update") }}' method="post">
             <label for="{{attr.name}}-value">{{attr.prompt}}:</label>
