@@ -35,27 +35,27 @@ fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Functio
     )
 }
 
-fn convert_package_to_topic( pkg: &Package) -> Result<Topic, CanPiAppError> {
+fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
     let ini_path = pkg.cfg_path.clone() + "/" + pkg.ini_file.as_str();
     if Path::new(&ini_path).is_file() {
         let json_path = pkg.cfg_path + "/" + pkg.json_file.as_str();
         if Path::new(&json_path).is_file() {
             let mut cfg = Cfg::new();
-            cfg.load_configuration(json_path);
+            cfg.load_configuration(ini_path, json_path);
             let topic = Topic {
                 ini_file_path: ini_path,
                 attr_defn: cfg,
             };
             return Ok(topic);
         } else {
-            return Err(CanPiAppError::NotFound(
-                format!("Json file '{json_path}' not found"),
-            ));
+            return Err(CanPiAppError::NotFound(format!(
+                "Json file '{json_path}' not found"
+            )));
         }
     } else {
-        return Err(CanPiAppError::NotFound(
-            format!("Configuration file '{ini_path}' not found"),
-        ));
+        return Err(CanPiAppError::NotFound(format!(
+            "Configuration file '{ini_path}' not found"
+        )));
     }
 }
 
@@ -66,7 +66,7 @@ fn load_pkg_cfgs(pkg_defn: &Pkg) -> TopicHash {
             if let Ok(attr) = convert_package_to_topic(v) {
                 topics.insert(k.to_string(), attr);
             }
-        } 
+        }
     }
     if topics.is_empty() {
         log::warn!("No package attribute definitions found");
@@ -86,17 +86,17 @@ async fn main() -> std::io::Result<()> {
         let shared_data = web::Data::new(Mutex::new(AppState {
             layout_name: hostname::get()?.into_string().unwrap(),
             project_id: "{project_id}".to_string(),
+            current_topic: None,
             // Create and load the configurations using the JSON schema files
-            topics: load_pkg_cfgs(canpi_cfg.pkg_defn),
+            topics: load_pkg_cfgs(&canpi_cfg.pkg_defn.unwrap()),
         }));
         let mut tera = Tera::new(canpi_cfg.template_path.unwrap().as_str()).unwrap();
         tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
         let app = move || {
             App::new()
-                .data(tera.clone())
+                .app_data(web::Data::new(tera.clone()))
                 .app_data(shared_data.clone())
-                .configure(autohs_routes)
-                .configure(canpi_routes)
+                .configure(topic_routes)
                 .configure(general_routes)
                 .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
         };

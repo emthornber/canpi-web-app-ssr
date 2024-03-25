@@ -1,4 +1,4 @@
-{% extends "canpi_index.html" %}
+{% extends "topic_index.html" %}
 {% block title %}Configuration{% endblock title %}
 {% block head %}
 {{ super() }}
@@ -31,7 +31,7 @@
             <td>{{attr.value}}</td>
             <td>
                 {% if attr.editable %}
-                    <form action='{{ scope_for(scope="cedit") }}' method="get">
+                    <form action='{{ scope_for(scope="edit") }}' method="get">
                     <input type="hidden" id="{{attr.name}}" name="name" value={{attr.name}}>
                     <input type="submit" value="Edit">
                     </form>

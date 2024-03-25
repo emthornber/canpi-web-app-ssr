@@ -1,3 +1,4 @@
+use actix_web::web::to;
 use actix_web::{web, Error, HttpResponse, Result};
 use canpi_config::ActionBehaviour::Edit;
 use canpi_config::*;
@@ -20,35 +21,46 @@ pub struct AttrLine {
     editable: bool,
 }
 
-pub async fn status_autohs(
+pub fn get_attr_defns(app_state: Mutex<AppState>) -> Result<Cfg, Error> {
+    if let Some(title) = app_state.current_topic {
+        if let Some(topic) = app_state.topics.get(&title) {
+            return Ok(topic.attr_defn);
+        }
+    }
+    Err(CanPiAppError::NotFound(
+        "Cannot read attribute deintions for {topics.current_topic}".to_string(),
+    ))
+}
+
+pub async fn status_topic(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
     let app_state = app_state.lock().unwrap();
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
+    ctx.insert("topic_title", &app_state.current_topic);
     let s = tmpl
-        .render("autohs_index.html", &ctx)
+        .render("topic_index.html", &ctx)
         .map_err(|_| CanPiAppError::TeraError("Template error".to_string()))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
-pub async fn display_autohs(
+pub async fn display_topic(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
     let mut attributes: Vec<AttrLine> = Vec::new();
     let mut ordered_attr: BTreeMap<String, Attribute> = BTreeMap::new();
     let app_state = app_state.lock().unwrap();
-    for (n, v) in app_state
-        .autohs_cfg
+    let attr_defn = get_attr_defns(app_state)?;
+    for (n, v) in attr_defn
         .attributes_with_action(ActionBehaviour::Display)
         .iter()
     {
         ordered_attr.insert(n.clone(), v.clone());
     }
-    for (n, v) in app_state
-        .autohs_cfg
+    for (n, v) in attr_defn
         .attributes_with_action(ActionBehaviour::Edit)
         .iter()
     {
@@ -69,21 +81,22 @@ pub async fn display_autohs(
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
+    ctx.insert("topic_title", &app_state.current_topic);
     ctx.insert("configuration", &attributes);
     let s = tmpl
-        .render("autohs_display.html", &ctx)
-        .map_err(|_| CanPiAppError::TeraError("autohs_display.html".to_string()))?;
+        .render("topic_display.html", &ctx)
+        .map_err(|_| CanPiAppError::TeraError("topic_display.html".to_string()))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
-pub async fn edit_autohs(
+pub async fn edit_topic(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
     attr_id: web::Query<AttrNameText>,
 ) -> Result<HttpResponse, Error> {
     let mut attributes: Vec<AttrLine> = Vec::new();
     let app_state = app_state.lock().unwrap();
-    let attribute = app_state.autohs_cfg.read_attribute(attr_id.name.clone());
+    let attribute = app_state.canpi_cfg.read_attribute(attr_id.name.clone());
     if let Some(v) = attribute {
         let attr = AttrLine {
             name: attr_id.name.clone(),
@@ -99,8 +112,8 @@ pub async fn edit_autohs(
         ctx.insert("layout_name", &app_state.layout_name);
         ctx.insert("configuration", &attributes);
         let s = tmpl
-            .render("autohs_edit.html", &ctx)
-            .map_err(|_| CanPiAppError::TeraError("autohs_edit.html".to_string()))?;
+            .render("topic_edit.html", &ctx)
+            .map_err(|_| CanPiAppError::TeraError("topic_edit.html".to_string()))?;
         Ok(HttpResponse::Ok().content_type("text/html").body(s))
     } else {
         let s = format!("Internal error: {} not found", attr_id.name).to_string();
@@ -108,7 +121,7 @@ pub async fn edit_autohs(
     }
 }
 
-pub async fn update_autohs(
+pub async fn update_topic(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
     params: web::Form<EditAttrForm>,
@@ -116,48 +129,48 @@ pub async fn update_autohs(
     let attr_name = params.name.clone();
     let attr_prompt = params.prompt.clone();
     let current_value = params.value.clone();
-    let mut s = "(update_autohs called)".to_string();
+    let mut s = "(update_topic called)".to_string();
 
     let mut app_state = app_state.lock().unwrap();
-    let attr = app_state.autohs_cfg.read_attribute(attr_name.clone());
+    let attr = app_state.canpi_cfg.read_attribute(attr_name.clone());
     if let Some(aref) = attr {
         let mut a = aref.clone();
         a.current = current_value.to_string();
-        let _ = app_state.autohs_cfg.write_attribute(attr_name.clone(), &a);
+        let _ = app_state.canpi_cfg.write_attribute(attr_name.clone(), &a);
         let mut ctx = tera::Context::new();
         ctx.insert("layout_name", &app_state.layout_name);
         ctx.insert("attr_prompt", &attr_prompt);
         ctx.insert("current_value", &current_value);
         s = tmpl
-            .render("autohs_confirm.html", &ctx)
-            .map_err(|_| CanPiAppError::TeraError("autohs_confirm.html".to_string()))?;
+            .render("topic_confirm.html", &ctx)
+            .map_err(|_| CanPiAppError::TeraError("topic_confirm.html".to_string()))?;
     } else {
-        s = format!("Key {} not in autohs configuration", attr_name);
+        s = format!("Key {} not in canpi configuration", attr_name);
     }
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
-pub async fn save_autohs(
+pub async fn save_topic(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
-    let mut status_text = "(save_autohs() called)".to_string();
+    let mut status_text = "(save_topic() called)".to_string();
     let app_state = app_state.lock().unwrap();
-    let autohs_ini_file = app_state.autohs_ini_file.clone();
+    let canpi_ini_file = app_state.canpi_ini_file.clone();
     if let Ok(()) = app_state
-        .autohs_cfg
-        .write_cfg_file(&autohs_ini_file, Some(true))
+        .canpi_cfg
+        .write_cfg_file(&canpi_ini_file, Some(true))
     {
-        status_text = format!("Configuration file {} updated", &autohs_ini_file).to_string();
+        status_text = format!("Configuration file {} updated", &canpi_ini_file).to_string();
     } else {
-        status_text = format!("Failed to update {}", &autohs_ini_file).to_string();
+        status_text = format!("Failed to updated {}", &canpi_ini_file).to_string();
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
     ctx.insert("status", &status_text);
     let s = tmpl
-        .render("autohs_save.html", &ctx)
-        .map_err(|_| CanPiAppError::TeraError("autohs_save.html".to_string()))?;
+        .render("topic_save.html", &ctx)
+        .map_err(|_| CanPiAppError::TeraError("topic_save.html".to_string()))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
