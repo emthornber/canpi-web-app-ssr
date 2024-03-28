@@ -9,6 +9,7 @@ use std::process;
 use std::sync::Mutex;
 use tera::{from_value, to_value, Function, Tera, Value};
 
+mod content;
 mod errors;
 mod handlers;
 mod models;
