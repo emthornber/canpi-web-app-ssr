@@ -27,6 +27,7 @@ tera = { version = "1", features = ["builtins"] }
 jsonschema = "0.17.1"
 schemars = "0.8.10"
 # Other utilities
+anyhow = "1.0.81"
 bcrypt = "0.15.0"
 chrono = { version = "0.4", features = ["serde"] }
 hostname = "^0.3"
