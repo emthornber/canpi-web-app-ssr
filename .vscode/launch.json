@@ -5,18 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch canpi-ssr",
             "type": "lldb",
             "request": "launch",
-            "name": "Launch canpi-ssr",
+            "program": "${workspaceRoot}/target/debug/canpi-ssr",
             "cargo": {
                 "args": [
                     "build"
                 ]
             },
-            "cwd": "${workspaceFolder}",
-            "program": "${cwd}/target/debug/canpi-ssr",
+            "args": [],
+            "cwd": "${workspaceRoot}",
             "env": {
-                "CPSSR_HOME": "${cwd}",
+                "CPSSR_HOME": "${workspaceRoot}",
                 "HOST_PORT": "0.0.0.0:8080"
             }
         }

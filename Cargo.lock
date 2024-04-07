@@ -525,6 +525,7 @@ dependencies = [
  "dotenv",
  "futures-util",
  "hostname",
+ "itertools",
  "jsonschema",
  "lazy_static 1.4.0",
  "log",

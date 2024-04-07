@@ -1,17 +1,10 @@
 use actix_web::{web, Error, HttpResponse, Result};
-use serde::Deserialize;
 use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
 use crate::state::AppState;
 
 use super::topic_handlers::status_topic;
-
-#[derive(Deserialize)]
-// Structure to hold the title information extracted from URL
-pub struct Title {
-    topic: String,
-}
 
 pub async fn status_handler(
     app_state: web::Data<Mutex<AppState>>,
@@ -30,15 +23,16 @@ pub async fn status_handler(
 pub async fn status_pkg(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
-    title: web::Path<Title>,
+    path: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
     {
+        let topic = path.into_inner();
         let mut app_state = app_state.lock().unwrap();
         // Assume failure and reset current topic
         app_state.current_topic = None;
         // Check that the topic is valid
-        if app_state.topics.contains_key(&title.topic) {
-            app_state.current_topic = Some(title.topic.clone());
+        if app_state.topics.contains_key(&topic) {
+            app_state.current_topic = Some(topic.clone());
         }
         // The mutex guard gets dropped here as app_state goes out of scope
     }
