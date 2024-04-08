@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch canpi-ssr",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/canpi-ssr",
+            "cargo": {
+                "args": [
+                    "build"
+                ]
+            },
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "CPSSR_HOME": "${workspaceRoot}",
+                "HOST_PORT": "0.0.0.0:8080"
+            }
+        }
+    ]
+}

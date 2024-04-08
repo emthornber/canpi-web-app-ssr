@@ -1,8 +1,6 @@
 use actix_files as fs;
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
-use errors::CanPiAppError;
-use log;
 use std::collections::HashMap;
 use std::path::Path;
 use std::process;
@@ -14,11 +12,12 @@ mod handlers;
 mod models;
 mod routes;
 mod state;
+mod topics;
 mod validation;
 
-use canpi_config::*;
 use routes::*;
-use state::{AppState, Topic, TopicHash};
+use state::AppState;
+use topics::*;
 use validation::*;
 
 fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Function + 'a {
@@ -35,45 +34,6 @@ fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Functio
     )
 }
 
-fn convert_package_to_topic( pkg: &Package) -> Result<Topic, CanPiAppError> {
-    let ini_path = pkg.cfg_path.clone() + "/" + pkg.ini_file.as_str();
-    if Path::new(&ini_path).is_file() {
-        let json_path = pkg.cfg_path + "/" + pkg.json_file.as_str();
-        if Path::new(&json_path).is_file() {
-            let mut cfg = Cfg::new();
-            cfg.load_configuration(json_path);
-            let topic = Topic {
-                ini_file_path: ini_path,
-                attr_defn: cfg,
-            };
-            return Ok(topic);
-        } else {
-            return Err(CanPiAppError::NotFound(
-                format!("Json file '{json_path}' not found"),
-            ));
-        }
-    } else {
-        return Err(CanPiAppError::NotFound(
-            format!("Configuration file '{ini_path}' not found"),
-        ));
-    }
-}
-
-fn load_pkg_cfgs(pkg_defn: &Pkg) -> TopicHash {
-    let mut topics = TopicHash::new();
-    if let Some(pkg_hash) = pkg_defn.packages {
-        for (k, v) in pkg_hash.iter() {
-            if let Ok(attr) = convert_package_to_topic(v) {
-                topics.insert(k.to_string(), attr);
-            }
-        } 
-    }
-    if topics.is_empty() {
-        log::warn!("No package attribute definitions found");
-    }
-    topics
-}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
@@ -81,22 +41,40 @@ async fn main() -> std::io::Result<()> {
         // Webpage formatting files
         let static_path = canpi_cfg.static_path.unwrap();
 
+        // Create and load the configurations using the JSON schema files
+        let topic_hash = load_pkg_cfgs(&canpi_cfg.pkg_defn.unwrap());
+
+        // Create the top menu HTML include file
+        if let Some(tmpl_path) = canpi_cfg.template_path.clone() {
+            let template_grandparent = Path::new(&tmpl_path)
+                .parent()
+                .and_then(Path::parent)
+                .unwrap();
+            let mut format_file = template_grandparent.to_path_buf();
+            format_file.push("top_menu.format");
+            if let Ok(()) = build_top_menu_html(&topic_hash, format_file.as_path()) {
+                log::info!("Top menu created")
+            } else {
+                log::warn!("Failed to create top menu");
+            }
+        } else {
+            log::warn!("Cannot find top menu format file");
+        }
         // Start HTTP Server
         let host_port = canpi_cfg.host_port.unwrap();
         let shared_data = web::Data::new(Mutex::new(AppState {
             layout_name: hostname::get()?.into_string().unwrap(),
             project_id: "{project_id}".to_string(),
-            // Create and load the configurations using the JSON schema files
-            topics: load_pkg_cfgs(canpi_cfg.pkg_defn),
+            current_topic: None,
+            topics: topic_hash,
         }));
         let mut tera = Tera::new(canpi_cfg.template_path.unwrap().as_str()).unwrap();
         tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
         let app = move || {
             App::new()
-                .data(tera.clone())
+                .app_data(web::Data::new(tera.clone()))
                 .app_data(shared_data.clone())
-                .configure(autohs_routes)
-                .configure(canpi_routes)
+                .configure(topic_routes)
                 .configure(general_routes)
                 .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
         };

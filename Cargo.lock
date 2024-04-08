@@ -323,9 +323,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.75"
+version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
+checksum = "0952808a6c2afd1aa8947271f3a60f1a6763c7b912d210184c5149b5cf147247"
 
 [[package]]
 name = "ar"
@@ -517,6 +517,7 @@ dependencies = [
  "actix-files",
  "actix-rt",
  "actix-web",
+ "anyhow",
  "bcrypt",
  "canpi-config",
  "cargo-deb",
@@ -524,6 +525,7 @@ dependencies = [
  "dotenv",
  "futures-util",
  "hostname",
+ "itertools",
  "jsonschema",
  "lazy_static 1.4.0",
  "log",
@@ -532,6 +534,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_test",
+ "strfmt",
  "tera",
  "thiserror",
 ]
@@ -2284,6 +2287,12 @@ dependencies = [
  "libc",
  "windows-sys 0.48.0",
 ]
+
+[[package]]
+name = "strfmt"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a8348af2d9fc3258c8733b8d9d8db2e56f54b2363a4b5b81585c7875ed65e65"
 
 [[package]]
 name = "strsim"
