@@ -28,12 +28,13 @@ jsonschema = "0.17.1"
 schemars = "0.8.10"
 # Other utilities
 anyhow = "1.0.81"
+thiserror = "1.0.30"
+# Error handling
 bcrypt = "0.15.0"
 chrono = { version = "0.4", features = ["serde"] }
-hostname = "^0.3"
-thiserror = "1.0.30"
+hostname = "0.4.0"
 dotenv = "0.15.0"
-rust-ini = "0.20.0"
+rust-ini = "0.21.0"
 lazy_static = "1.4.0"
 log = "0.4.21"
 futures-util = "0.3.28"
@@ -48,13 +49,13 @@ cargo-deb = "2.1.0"
 maintainer = "Mark Thornber <mark.thornber@merg.org.uk>"
 copyright = "2023, Mark Thornber <mark.thornber@merg.org.uk>"
 extended-description = """\
-Webserver for the maintenance of Hotspot and CanPi configurations"""
+Web Application for the maintenance of Hotspot and CanPi configurations"""
 priority = "required"
 maintainer-scripts = "debianpkg/"
 assets = [
     # binary
     [
-        "target/release/canpi-ssr",
+        "target/arm-unknown-linux-gnueabihf/release/canpi-ssr",
         "usr/local/bin/",
         "755",
     ],

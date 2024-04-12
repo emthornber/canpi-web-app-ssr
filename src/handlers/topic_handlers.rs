@@ -1,5 +1,4 @@
 use actix_web::{web, Error, HttpResponse, Result};
-use canpi_config::ActionBehaviour::Edit;
 use canpi_config::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -85,7 +84,7 @@ pub async fn display_topic(
             value: v.current.clone(),
             default: "".to_string(),
             format: "".to_string(),
-            editable: v.action == Edit,
+            editable: v.action == ActionBehaviour::Edit,
         };
         attributes.push(attr);
     }

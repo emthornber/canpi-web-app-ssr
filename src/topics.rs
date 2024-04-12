@@ -19,16 +19,16 @@ pub fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
                 ini_file_path: ini_path,
                 attr_defn: cfg,
             };
-            return Ok(topic);
+            Ok(topic)
         } else {
-            return Err(CanPiAppError::NotFound(format!(
+            Err(CanPiAppError::NotFound(format!(
                 "Json file '{json_path}' not found"
-            )));
+            )))
         }
     } else {
-        return Err(CanPiAppError::NotFound(format!(
+        Err(CanPiAppError::NotFound(format!(
             "Configuration file '{ini_path}' not found"
-        )));
+        )))
     }
 }
 
