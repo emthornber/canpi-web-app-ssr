@@ -62,7 +62,7 @@ pub fn build_top_menu_html<P: AsRef<Path>>(
     file.read_to_string(&mut format_defn)?;
     let mut html_file = create_html_file(format_file)?;
     if topic_hash.is_empty() {
-        html_file.write_all(b",<li><br>No maintainable packages configured<br></li>")?;
+        html_file.write_all(b"<li><br>No maintainable packages configured<br></li>")?;
     } else {
         let mut html_code = String::new();
         for title in topic_hash.keys().sorted() {
