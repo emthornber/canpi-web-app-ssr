@@ -42,58 +42,56 @@ impl CanpiConfig {
     ///
     pub fn new() -> Result<CanpiConfig, CanPiAppError> {
         let h = std::env::var("CPSSR_HOME");
-        match h {
-            Ok(home) => {
-                let cps_home = home;
-                if !Path::new(&cps_home).is_dir() {
-                    return Err(CanPiAppError::NotFound(
-                        "EV CPSSR_HOME not a directory".to_string(),
-                    ));
-                }
-                let mut cfg = CanpiConfig {
-                    config_path: None,
-                    host_port: None,
-                    static_path: None,
-                    template_path: None,
-                    pkg_defn: None,
-                };
-
-                let cfile = cps_home.clone() + "/" + STATIC + CFGFILE;
-                if Path::new(&cfile).is_file() {
-                    cfg.config_path = Some(cfile.clone());
-                    let mut pkg = Pkg::new();
-                    pkg.load_packages(cfile)
-                        .expect("Cannot load package configurations");
-                    cfg.pkg_defn = Some(pkg);
-                } else {
-                    return Err(CanPiAppError::NotFound(format!(
-                        "Configuration file '{cfile}' not found"
-                    )));
-                }
-
-                if let Ok(port) = std::env::var("HOST_PORT") {
-                    cfg.host_port = Some(port);
-                } else {
-                    return Err(CanPiAppError::NotFound(
-                        "EV HOST_PORT not valid".to_string(),
-                    ));
-                }
-                let sdir = cps_home.clone() + "/" + STATIC;
-                if Path::new(&sdir).is_dir() {
-                    cfg.static_path = Some(sdir);
-                }
-                let tdir = cps_home.clone() + "/" + TEMPLATE;
-                let grandparent = Path::new(&tdir).parent().unwrap().parent().unwrap();
-                if grandparent.is_dir() {
-                    cfg.template_path = Some(tdir);
-                }
-
-                return Ok(cfg);
+        if let Ok(home) = h {
+            let cps_home = home;
+            if !Path::new(&cps_home).is_dir() {
+                return Err(CanPiAppError::NotFound(
+                    "EV CPSSR_HOME not a directory".to_string(),
+                ));
             }
-            _ => {}
+            let mut cfg = CanpiConfig {
+                config_path: None,
+                host_port: None,
+                static_path: None,
+                template_path: None,
+                pkg_defn: None,
+            };
+
+            let cfile = cps_home.clone() + "/" + STATIC + CFGFILE;
+            if Path::new(&cfile).is_file() {
+                cfg.config_path = Some(cfile.clone());
+                let mut pkg = Pkg::new();
+                pkg.load_packages(cfile)
+                    .expect("Cannot load package configurations");
+                cfg.pkg_defn = Some(pkg);
+            } else {
+                return Err(CanPiAppError::NotFound(format!(
+                    "Configuration file '{cfile}' not found"
+                )));
+            }
+
+            if let Ok(port) = std::env::var("HOST_PORT") {
+                cfg.host_port = Some(port);
+            } else {
+                return Err(CanPiAppError::NotFound(
+                    "EV HOST_PORT not valid".to_string(),
+                ));
+            }
+            let sdir = cps_home.clone() + "/" + STATIC;
+            if Path::new(&sdir).is_dir() {
+                cfg.static_path = Some(sdir);
+            }
+            let tdir = cps_home.clone() + "/" + TEMPLATE;
+            let grandparent = Path::new(&tdir).parent().unwrap().parent().unwrap();
+            if grandparent.is_dir() {
+                cfg.template_path = Some(tdir);
+            }
+
+            Ok(cfg)
+        } else {
+            Err(CanPiAppError::NotFound(
+                "EV CPSSR_HOME not defined".to_string(),
+            ))
         }
-        Err(CanPiAppError::NotFound(
-            "EV CPSSR_HOME not defined".to_string(),
-        ))
     }
 }
