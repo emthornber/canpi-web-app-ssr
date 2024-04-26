@@ -1,48 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% block head %}
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Consolas">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-    <link rel="stylesheet" href="/static/canpigrid.css"/>
+    <link rel="stylesheet" href="/static/canpigrid.css" />
     <meta charset="UTF-8">
-    <title>{% block title %}{% endblock title %} - CANPi Server</title>
+    <title>{% block title %}{% endblock title %} - CANPi Services</title>
     {% endblock head %}
 </head>
+
 <body>
-<div class="grid-container">
-    <div class="item5">
-        <div class="rpilogo">
-            <img src="/static/rpi.png" alt="Raspberry Pi Logo" width="70" height="90">
+    <div class="grid-container">
+        <div class="item5">
+            <div class="rpilogo">
+                <img src="/static/rpi.png" alt="Raspberry Pi Logo" width="70" height="90">
+            </div>
+        </div>
+        <div class="item1">
+            <h1>CANPi Server</h1>
+        </div>
+        <div class="item2">
+            <ul>
+                <li><a href='{{ scope_for(scope="root") }}'>Home</a></li>
+                {% block menu %}{% endblock menu %}
+            </ul>
+        </div>
+        <div class="item3">
+            {% block content %}{% endblock content %}
+        </div>
+        <div class="item6">
+            <div class="merglogo">
+                <img src="/static/merg_logo_blue.svg" alt="MERG Logo" width="140" height="55"><br>
+            </div>
+        </div>
+        <div class="item4">
+            {% block footer %}
+            <p>
+                This is an example of a dynamic web page served with Actix using Tera templates.
+                <br>
+                &copy; Copyright {{ now() | date(format="%Y") }} by
+                <a href="https://www.merg.org.uk/contactus.php">Model Electronic Railway Group</a>
+            </p>
+            {% endblock footer %}
         </div>
     </div>
-    <div class="item1">
-        <h1>CANPi Server</h1>
-    </div>
-    <div class="item2">
-        <ul>
-            <li><a href='{{ scope_for(scope="root") }}'>Home</a></li>
-            {% block menu %}{% endblock menu %}
-        </ul>
-    </div>
-    <div class="item3">
-        {% block content %}{% endblock content %}
-    </div>
-    <div class="item6">
-        <div class="merglogo">
-            <img src="/static/merg_logo_blue.svg" alt="MERG Logo" width="140" height="55"><br>
-        </div>
-    </div>
-    <div class="item4">
-        {% block footer %}
-        <p>
-            This is an example of a dynamic web page served with Actix using Tera templates.
-            <br>
-            &copy; Copyright {{ now() | date(format="%Y") }} by
-            <a href="https://www.merg.org.uk/contactus.php">Model Electronic Railway Group</a>
-        </p>
-        {% endblock footer %}
-    </div>
-</div>
 </body>
+
 </html>

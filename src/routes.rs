@@ -18,6 +18,7 @@ lazy_static! {
     pub static ref ROUTE_DATA: HashMap<&'static str, String> = {
         let mut map = HashMap::new();
 
+        #[allow(clippy::useless_format)]
         map.insert("root", format!("{LAYOUT}"));
         map.insert("confirm", format!("{LAYOUT}{TOPIC}{CONFIRM}"));
         map.insert("display", format!("{LAYOUT}{TOPIC}{DISPLAY}"));

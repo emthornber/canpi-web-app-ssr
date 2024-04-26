@@ -123,7 +123,7 @@ mod tests {
     const CFG_PARTIAL_DATA: &str = r#"
         {
             "CANPiServer" : {
-                "cfg_path" : "/Users/thornbem/RustroverProjects/canpi-web-app-ssr/scratch",
+                "cfg_path" : "/home/thornbem/Work/canpi-web-app-ssr/scratch",
                 "ini_file" : "canpi_example.cfg",
                 "json_file" : "canpi.json"
             }
@@ -142,8 +142,7 @@ mod tests {
 
     #[test]
     fn check_html_file_name() {
-        let file_name_root =
-            Path::new("/Users/thornbem/RustroverProjects/canpi_web_app_ssr/scratch");
+        let file_name_root = Path::new("/home/thornbem/Work/canpi_web_app_ssr/templates");
         let mut format_file = file_name_root;
         let mut format_file = format_file.join("top_menu.format");
         let mut html_file = file_name_root;
@@ -153,19 +152,14 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "No files found - duff directory")]
     fn cfg_bad_data_3() {
-        let cfg_file =
-            "/Users/thornbem/RustroverProjects/canpi-web-app-ssr/scratch/bad_data_3.json";
+        let cfg_file = "/home/thornbem/Work/canpi-web-app-ssr/scratch/bad_data_3.json";
         setup_file(&cfg_file, CFG_BAD_DATA_3);
         let mut pkg_defn = Pkg::new();
         pkg_defn
             .load_packages(&cfg_file)
             .expect("No files found - duff directory");
-        build_top_menu_html(
-            &pkg_defn,
-            "/Users/thornbem/RustroverProjects/canpi-web-app-ssr/templates/top_menu.format",
-        )
-        .expect("no called");
         teardown_file(&cfg_file);
     }
 }

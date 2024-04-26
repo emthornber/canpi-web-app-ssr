@@ -16,7 +16,7 @@ all: clean package
 .PHONY: all build clean release test $(SUBDIRS)
 
 build:
-	cargo build --debug
+	cargo build
 
 clean:
 	cargo clean
