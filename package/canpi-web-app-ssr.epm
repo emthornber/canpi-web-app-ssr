@@ -8,17 +8,17 @@
 #
 ################################################################################
 #
-$canssr="canpi-ssr"
+$target="canpi-ssr"
 # Utilities
 $SCTL=/usr/bin/systemctl
 # Services
-$CANPI_SSR=${canssr}.service
+$SERVICE=${target}.service
 # Directories
-$canpi_ssr=/usr/local/etc/${canssr}
+$home=/usr/local/etc/${target}
 $bindir=/usr/local/bin
-$logdir=/var/log/${canssr}
-$service=/usr/lib/systemd/system
-$ssrdir=/etc/systemd/system/${canssr}.service.d
+$logdir=/var/log/${target}
+$systemd=/usr/lib/systemd/system
+$srvdir=/etc/systemd/system/${target}.service.d
 # Sources
 $sysdir=${srcdir}/systemd
 $scratch=${srcdir}/scratch
@@ -33,48 +33,50 @@ $templates=${srcdir}/templates
 %description Web Application for the maintenance of Hotspot and CanPi configurations
 %version 0.1.2
 
+%requires debconf
+
 d 755 root root /etc -
 d 755 root root /etc/logrotate.d -
 d 755 root root /etc/systemd -
 d 755 root root /etc/systemd/system -
-d 755 root root ${ssrdir} -
+d 755 root root ${srvdir} -
 d 755 root root /usr -
 d 755 root root /usr/lib -
 d 755 root root /usr/lib/systemd -
-d 755 root root ${service} -
+d 755 root root ${systemd} -
 d 755 root root /usr/local -
 d 755 root root ${bindir} -
 d 755 root root /usr/local/etc -
-d 755 root root ${canpi_ssr} -
-d 755 root root ${canpi_ssr}/scratch -
-d 755 root root ${canpi_ssr}/static -
-d 755 root root ${canpi_ssr}/templates -
+d 755 root root ${home} -
+d 755 root root ${home}/scratch -
+d 755 root root ${home}/static -
+d 755 root root ${home}/templates -
 d 755 root root /var -
 d 755 root root /var/log -
 d 755 root root ${logdir} -
 
 # canpi-ssr daemon, control script, and service definition
-f 755 root root ${bindir}/${canssr} ${binary}
-f 644 root root ${service}/${CANPI_SSR}  ${sysdir}/${CANPI_SSR}
-f 644 root root ${ssrdir}/${canssr}.conf ${sysdir}/${canssr}.conf
+f 755 root root ${bindir}/${target} ${binary}
+f 644 root root ${systemd}/${SERVICE}  ${sysdir}/${SERVICE}
+f 644 root root ${srvdir}/${target}.conf ${sysdir}/${target}.conf
 
 # canpi-ssr configuration files
-f 644 root root ${canpi_ssr}/scratch   ${scratch}/*
-f 644 root root ${canpi_ssr}/static    ${static}/*
-f 644 root root ${canpi_ssr}/templates ${templates}/*
+f 644 root root ${home}/scratch   ${scratch}/*
+f 644 root root ${home}/static    ${static}/*
+f 644 root root ${home}/templates ${templates}/*
 
 %postinstall <<EOF
 
-${SCTL} enable ${CANPI_SSR}
-${SCTL} start ${CANPI_SSR}
+${SCTL} enable ${SERVICE}
+${SCTL} start ${SERVICE}
 
 EOF
 
 %preremove <<EOF
-${SCTL} stop ${CANPI_SSR}
-${SCTL} disable ${CANPI_SSR}
+${SCTL} stop ${SERVICE}
+${SCTL} disable ${SERVICE}
 
-rm -f ${canpi_ssr}/templates/top_menu.html
+rm -f ${home}/templates/top_menu.html
 
 EOF
 

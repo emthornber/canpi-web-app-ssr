@@ -9,11 +9,9 @@ export SDIR := ${shell pwd}
 export BFILE := "$(SDIR)/target/arm-unknown-linux-gnueabihf/release/canpi-ssr"
 export ODIR := "$(SDIR)/package"
 
-SUBDIRS = package
-
 all: clean package
 
-.PHONY: all build clean release test $(SUBDIRS)
+.PHONY: all build clean release test package
 
 build:
 	cargo build
@@ -21,10 +19,8 @@ build:
 clean:
 	cargo clean
 
-$(SUBDIRS):
-	$(MAKE) -f $@/Makefile
-
 package: release
+	$(MAKE) -f $@/Makefile pkgs
 
 release:
 	cargo build --release
