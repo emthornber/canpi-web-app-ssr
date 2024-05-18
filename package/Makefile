@@ -3,6 +3,9 @@
 #   18 April, 2024 - E M Thornber
 #   Created
 #
+#   04 May, 2024 - E M Thornber
+#   Streamlined targets
+#
 #	EVs required
 #	BFILE - path to canpi executable
 #	ODIR  - where to place the .deb file

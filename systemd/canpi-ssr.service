@@ -18,7 +18,7 @@ After=multi-user.target
 # Consult the documentantion for types (https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=) other options.
 Type=simple
 # Command with arguments to invoke when the unit is activated.
-ExecStart=/usr/local/bin/canpi-ssr
+ExecStart=/bin/bash -c "/usr/local/bin/canpi-ssr >>/var/log/canpi-ssr/stdout.log 2>>/var/log/canpi-ssr/stderr.log
 # Command with arguments to invoke when the unit is deactivated.
 #ExecStop=
 # Configures under what conditions the unit will be restarted.

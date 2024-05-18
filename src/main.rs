@@ -1,11 +1,13 @@
 use actix_files as fs;
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
+use simple_logger::SimpleLogger;
 use std::collections::HashMap;
 use std::path::Path;
 use std::process;
 use std::sync::Mutex;
 use tera::{from_value, to_value, Function, Tera, Value};
+use time::macros::format_description;
 
 mod errors;
 mod handlers;
@@ -37,6 +39,16 @@ fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Functio
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
+    SimpleLogger::new()
+        .with_level(log::LevelFilter::Warn)
+        .env()
+        .with_timestamp_format(format_description!(
+            "[year]-[month]-[day] [hour]:[minute]:[second]"
+        ))
+        .init()
+        .unwrap();
+    log::info!("canpi webapp started");
+
     if let Ok(canpi_cfg) = CanpiConfig::new() {
         // Webpage formatting files
         let static_path = canpi_cfg.static_path.unwrap();

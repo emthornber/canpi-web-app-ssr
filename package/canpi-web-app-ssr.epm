@@ -31,7 +31,7 @@ $templates=${srcdir}/templates
 %license LICENSE
 %readme README.md
 %description Web Application for the maintenance of Hotspot and CanPi configurations
-%version 0.1.2
+%version 0.1.3
 
 %requires debconf
 
@@ -64,6 +64,7 @@ f 644 root root ${srvdir}/${target}.conf ${sysdir}/${target}.conf
 f 644 root root ${home}/scratch   ${scratch}/*
 f 644 root root ${home}/static    ${static}/*
 f 644 root root ${home}/templates ${templates}/*
+f 644 root root /etc/logrotate.d/canpi-ssr ${static}/canpi-ssr.logrotate
 
 %postinstall <<EOF
 

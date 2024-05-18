@@ -61,9 +61,14 @@ impl CanpiConfig {
             if Path::new(&cfile).is_file() {
                 cfg.config_path = Some(cfile.clone());
                 let mut pkg = Pkg::new();
-                pkg.load_packages(cfile)
-                    .expect("Cannot load package configurations");
-                cfg.pkg_defn = Some(pkg);
+                match pkg.load_packages(cfile) {
+                    Ok(()) => cfg.pkg_defn = Some(pkg),
+                    Err(e) => {
+                        return Err(CanPiAppError::NotFound(format!(
+                            "Cannot load package configurations '{e}'"
+                        )))
+                    }
+                }
             } else {
                 return Err(CanPiAppError::NotFound(format!(
                     "Configuration file '{cfile}' not found"
