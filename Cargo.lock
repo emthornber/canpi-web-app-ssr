@@ -506,6 +506,7 @@ dependencies = [
  "anyhow",
  "backitup",
  "dotenv",
+ "glob",
  "include_dir",
  "jsonschema",
  "log",

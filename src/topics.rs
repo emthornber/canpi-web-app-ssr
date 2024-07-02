@@ -13,8 +13,7 @@ pub fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
     if Path::new(&ini_path).is_file() {
         let json_path = pkg.cfg_path.clone() + "/" + pkg.json_file.as_str();
         if Path::new(&json_path).is_file() {
-            let mut cfg = Cfg::new();
-            let _ = cfg.load_configuration(ini_path.clone(), json_path);
+            let cfg = Cfg::new(ini_path.clone(), json_path);
             let topic = Topic {
                 ini_file_path: ini_path,
                 attr_defn: cfg,
@@ -142,7 +141,7 @@ mod tests {
 
     #[test]
     fn check_html_file_name() {
-        let file_name_root = Path::new("/home/thornbem/Work/canpi_web_app_ssr/templates");
+        let file_name_root = Path::new("templates");
         let mut format_file = file_name_root;
         let mut format_file = format_file.join("top_menu.format");
         let mut html_file = file_name_root;
@@ -152,14 +151,15 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "No files found - duff directory")]
     fn cfg_bad_data_3() {
-        let cfg_file = "/home/thornbem/Work/canpi-web-app-ssr/scratch/bad_data_3.json";
+        let cfg_file = "scratch/bad_data_3.json";
         setup_file(&cfg_file, CFG_BAD_DATA_3);
-        let mut pkg_defn = Pkg::new();
-        pkg_defn
-            .load_packages(&cfg_file)
-            .expect("No files found - duff directory");
+        let pkg_defn = Pkg::new(&cfg_file);
         teardown_file(&cfg_file);
+        if let Some(package) = pkg_defn.packages {
+            assert!(false)
+        } else {
+            assert!(true)
+        }
     }
 }
