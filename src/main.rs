@@ -90,13 +90,10 @@ async fn main() -> std::io::Result<()> {
                 .configure(general_routes)
                 .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
         };
-        println!(
-            "Listening on: {}, open browser and visit - have a go!",
-            host_port
-        );
+        log::info!("Listening on: {}", host_port);
         HttpServer::new(app).bind(&host_port)?.run().await
     } else {
-        println!("EV contents failed validation - exiting ...");
+        log::error!("EV contents failed validation - exiting ...");
         process::exit(1);
     }
 }

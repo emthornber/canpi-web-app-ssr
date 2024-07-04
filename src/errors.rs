@@ -28,20 +28,20 @@ impl CanPiAppError {
 
         match self {
             ActixError(msg) => {
-                println!("Server error occurred: {:?}", msg);
+                log::error!("Server error occurred: {:?}", msg);
                 "Internal server error".into()
             }
             TeraError(msg) => {
-                println!("Error in rendering the template {:?}", msg);
+                log::error!("Error in rendering the template {:?}", msg);
                 msg.into()
             }
             NotFound(msg) => {
-                println!("Not found error occurred: {:?}", msg);
+                log::error!("Not found error occurred: {:?}", msg);
                 msg.into()
             }
             Other(err) => {
                 let msg = format!("{}", err);
-                println!("Internal Error: {}", msg);
+                log::error!("Internal Error: {}", msg);
                 msg
             }
         }

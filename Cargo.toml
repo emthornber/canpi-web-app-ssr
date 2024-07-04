@@ -39,9 +39,9 @@ lazy_static = "1.4.0"
 log = "0.4.21"
 futures-util = "0.3.28"
 strfmt = "0.2.4"
-itertools = "0.12.1"
-simple_logger = "5.0.0"
+itertools = "0.13.0"
 time = "0.3.36"
+simple_logger = "5.0.0"
 
 [dev-dependencies]
 actix-rt = "2.5.0"
