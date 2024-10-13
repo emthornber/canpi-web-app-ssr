@@ -20,7 +20,7 @@ clean:
 	cargo clean
 
 package: release
-	$(MAKE) -f $@/Makefile pkgs
+	VERS=`python3 extract_version.py` $(MAKE) -f $@/Makefile pkgs
 
 release:
 	cargo build --release

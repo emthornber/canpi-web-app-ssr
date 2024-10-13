@@ -1,4 +1,5 @@
-A web server written in Rust to maintain the configuration files of AutoHotspot and CanPi packages.
+A web server written in Rust to maintain the configuration files of AutoHotspot
+and CanPi packages.
 
 Mark Thornber
 MERG Member 3748
