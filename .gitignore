@@ -20,3 +20,10 @@ target/
 *.log
 *.tar.gz
 top_menu.html
+
+# Python venv
+bin/
+include/
+lib/
+ssr/
+pyvenv.cfg
