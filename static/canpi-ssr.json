@@ -1,12 +1,12 @@
 {
-    "AutoHotSpot": {
-        "cfg_path": "/usr/local/etc/canpi-ssr/scratch",
-        "ini_file": "hotspot_example.cfg",
-        "json_file": "hotspot_example.json"
+    "HotSpot": {
+        "cfg_path": "/usr/local/etc/hotspot",
+        "ini_file": "hotspot.cfg",
+        "json_file": "hotspot.json"
     },
-    "CANPiServer": {
-        "cfg_path": "/usr/local/etc/canpi-ssr/scratch",
-        "ini_file": "canpi_example.cfg",
-        "json_file": "canpi_example.json"
+    "CANPi Server": {
+        "cfg_path": "/usr/local/etc/canpi",
+        "ini_file": "canpi.cfg",
+        "json_file": "canpi.json"
     }
 }

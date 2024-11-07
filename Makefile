@@ -11,7 +11,7 @@ export ODIR := "$(SDIR)/package"
 
 all: clean package
 
-.PHONY: all build clean release test package
+.PHONY: all build clean documents release test package
 
 build:
 	cargo build
@@ -19,7 +19,13 @@ build:
 clean:
 	cargo clean
 
-package: release
+documents: \
+	changelog.Debian.gz
+
+changelog.Debian.gz: CHANGES.md
+	gzip $< > $@
+ 
+package: release documents
 	VERS=`python3 extract_version.py` $(MAKE) -f $@/Makefile pkgs
 
 release:

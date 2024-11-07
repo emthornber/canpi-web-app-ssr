@@ -22,6 +22,7 @@ $SERVICE=${target}.service
 # Directories
 $home=/usr/local/etc/${target}
 $bindir=/usr/local/bin
+$docdir=/usr/share/doc/${target}
 $logdir=/var/log/${target}
 $systemd=/usr/lib/systemd/system
 $srvdir=/etc/systemd/system/${target}.service.d
@@ -53,6 +54,9 @@ d 755 root root ${systemd} -
 d 755 root root /usr/local -
 d 755 root root ${bindir} -
 d 755 root root /usr/local/etc -
+d 755 root root /usr/share -
+d 755 root root /usr/share/doc -
+d 755 root root ${docdir} -
 d 755 root root ${home} -
 d 755 root root ${home}/scratch -
 d 755 root root ${home}/static -
@@ -71,6 +75,11 @@ f 644 root root ${home}/scratch   ${scratch}/*
 f 644 root root ${home}/static    ${static}/*
 f 644 root root ${home}/templates ${templates}/*
 f 644 root root /etc/logrotate.d/canpi-ssr ${static}/canpi-ssr.logrotate
+
+# canpi-ssr doc files
+f 644 root root ${docdir}/changelog.Debian.gz ${srcdir}/changelog.Debian.gz
+f 644 root root ${docdir}/copyright ${srcdir}/LICENSE
+f 644 root root ${docdir}/README.md ${srcdir}/README.md
 
 %literal(changelog) CHANGES.md
 

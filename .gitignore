@@ -18,7 +18,7 @@ target/
 
 *.deb
 *.log
-*.tar.gz
+*.gz
 top_menu.html
 
 # Python venv

@@ -1,12 +1,12 @@
 [package]
 name = "canpi-web-app-ssr"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Mark Thornber <mark.thornber@merg.org.uk>"]
 edition = "2018"
 license = "GPL-3.0-0r-later"
 readme = "README.md"
 description = "A configuration web application"
-repository = "https://github.com/emthornber/capnpi-web-app-ssr"
+repository = "https://github.com/emthornber/canpi-web-app-ssr"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [[bin]]
