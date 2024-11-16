@@ -23,7 +23,7 @@ documents: \
 	changelog.Debian.gz
 
 changelog.Debian.gz: CHANGES.md
-	gzip $< > $@
+	gzip -c $< > $@
  
 package: release documents
 	VERS=`python3 extract_version.py` $(MAKE) -f $@/Makefile pkgs

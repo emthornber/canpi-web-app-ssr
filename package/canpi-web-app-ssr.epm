@@ -22,7 +22,7 @@ $SERVICE=${target}.service
 # Directories
 $home=/usr/local/etc/${target}
 $bindir=/usr/local/bin
-$docdir=/usr/share/doc/${target}
+$docdir=/usr/local/share/doc/${target}
 $logdir=/var/log/${target}
 $systemd=/usr/lib/systemd/system
 $srvdir=/etc/systemd/system/${target}.service.d
@@ -54,8 +54,8 @@ d 755 root root ${systemd} -
 d 755 root root /usr/local -
 d 755 root root ${bindir} -
 d 755 root root /usr/local/etc -
-d 755 root root /usr/share -
-d 755 root root /usr/share/doc -
+d 755 root root /usr/local/share -
+d 755 root root /usr/local/share/doc -
 d 755 root root ${docdir} -
 d 755 root root ${home} -
 d 755 root root ${home}/scratch -

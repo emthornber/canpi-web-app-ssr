@@ -1,6 +1,6 @@
 [package]
 name = "canpi-web-app-ssr"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Mark Thornber <mark.thornber@merg.org.uk>"]
 edition = "2018"
 license = "GPL-3.0-0r-later"
@@ -28,7 +28,7 @@ jsonschema = "0.26.1"
 schemars = "0.8.10"
 # Other utilities
 anyhow = "1.0.81"
-thiserror = "1.0.30"
+thiserror = "1.0.69"
 # Error handling
 bcrypt = "0.15.0"
 chrono = { version = "0.4", features = ["serde"] }
