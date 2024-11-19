@@ -3,11 +3,17 @@
 #   18 April, 2024 - E M Thornber
 #   Created
 #
+#	19 November, 2024 - E M Thornber
+#	Define ARCH and BFILE taking into account the settings in config.toml
+#
 ################################################################################
 
-export SDIR := ${shell pwd}
-export BFILE := "$(SDIR)/target/arm-unknown-linux-gnueabihf/release/canpi-ssr"
-export ODIR := "$(SDIR)/package"
+export ARCH   := $(shell python3 extract_architecture.py)
+export SDIR   := ${shell pwd}
+TRIPLE := $(shell python3 extract_triple.py)
+export BFILE  := "$(SDIR)/target/$(TRIPLE)/release/canpi-ssr"
+export ODIR   := "$(SDIR)/package"
+export VERS   := $(shell python3 extract_version.py)
 
 all: clean package
 
@@ -26,7 +32,7 @@ changelog.Debian.gz: CHANGES.md
 	gzip -c $< > $@
  
 package: release documents
-	VERS=`python3 extract_version.py` $(MAKE) -f $@/Makefile pkgs
+	$(MAKE) -f $@/Makefile pkgs
 
 release:
 	cargo build --release
