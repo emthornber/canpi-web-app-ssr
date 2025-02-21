@@ -1,3 +1,11 @@
+canpi-web-app-ssr (0.1.8) bookworm; urgency=low
+  * Made the build process architecture-agnostic
+  * Updated Cargo library versions
+  * Updated INSTALL.md and README.md
+  * Rewrote python script to extract package information from Cargo.toml
+
+-- Mark Thornber <mark.thornber@gmail.com> Sun, 16 Nov 2024 10:50:00 +0000
+
 canpi-web-app-ssr (0.1.7) bookworm; urgency=low
   * Recovered CHANGES.md
   * Installed document files in /usr/_local_/share/doc/canpi-ssr

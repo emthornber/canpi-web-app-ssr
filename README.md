@@ -1,7 +1,4 @@
-A web server written in Rust to maintain the configuration files of AutoHotspot
-and CanPi packages.
+A web server written in Rust to maintain the configuration files of 
+and CanPiCAP / CanPiZero executables.
 
-Mark Thornber
-MERG Member 3748
-merg.org.uk
-August 2023
+Building and installation instructions are in [INSTALL.md](INSTALL.md)

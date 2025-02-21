@@ -1,6 +1,6 @@
 [package]
 name = "canpi-web-app-ssr"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["Mark Thornber <mark.thornber@merg.org.uk>"]
 edition = "2018"
 license = "GPL-3.0-0r-later"
@@ -19,24 +19,24 @@ canpi-config = { path = "../canpi-config" }
 actix-web = "4.9.0"
 actix-files = "0.6.5"
 # Data serialisation library
-serde = { version = "1.0.210", features = ["derive"] }
-serde_json = "1.0.128"
+serde = { version = "1.0.218", features = ["derive"] }
+serde_json = "1.0.139"
 serde_test = "1.0.130"
 tera = { version = "1", features = ["builtins"] }
 # JSON libraries
-jsonschema = "0.26.1"
+jsonschema = "0.29.0"
 schemars = "0.8.10"
 # Other utilities
-anyhow = "1.0.81"
-thiserror = "1.0.69"
+anyhow = "1.0.93"
+thiserror = "2.0.11"
 # Error handling
-bcrypt = "0.15.0"
-chrono = { version = "0.4", features = ["serde"] }
+bcrypt = "0.15.1"
+chrono = { version = "0.4.38", features = ["serde"] }
 hostname = "0.4.0"
 dotenv = "0.15.0"
 rust-ini = "0.21.0"
 lazy_static = "1.5.0"
-log = "0.4.21"
+log = "0.4.22"
 futures-util = "0.3.28"
 strfmt = "0.2.4"
 itertools = "0.13.0"
@@ -45,4 +45,4 @@ simple_logger = "5.0.0"
 
 [dev-dependencies]
 actix-rt = "2.5.0"
-cargo-deb = "2.1.0"
+cargo-deb = "2.8.0"

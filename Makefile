@@ -6,8 +6,10 @@
 ################################################################################
 
 export SDIR := ${shell pwd}
-export BFILE := "$(SDIR)/target/arm-unknown-linux-gnueabihf/release/canpi-ssr"
+export BFILE := "$(SDIR)/target/release/canpi-ssr"
 export ODIR := "$(SDIR)/package"
+export PKGNAME := ${shell python3 extract_value_from_toml_file.py -k name}
+export VERS := ${shell python3 extract_value_from_toml_file.py -k version}
 
 all: clean package
 
@@ -26,7 +28,7 @@ changelog.Debian.gz: CHANGES.md
 	gzip -c $< > $@
  
 package: release documents
-	VERS=`python3 extract_version.py` $(MAKE) -f $@/Makefile pkgs
+	$(MAKE) -f $@/Makefile pkgs
 
 release:
 	cargo build --release
