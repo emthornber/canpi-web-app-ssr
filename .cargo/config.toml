@@ -1,1 +1,2 @@
-config64.toml
+[build]
+target = "arm-unknown-linux-gnueabihf"

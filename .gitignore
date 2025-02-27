@@ -20,7 +20,6 @@ target/
 *.log
 *.gz
 top_menu.html
-.cargo/config.toml
 
 # Python venv
 bin/
