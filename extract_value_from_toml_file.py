@@ -5,14 +5,14 @@
 #
 import argparse
 import sys
-import tomllib
+import tomlkit
 
 def load_cargo_toml(file_path):
     try:
         with open(file_path, 'rb') as toml:
-            toml_dict = tomllib.load(toml)
+            toml_dict = tomlkit.load(toml)
         
-    except tomllib.TOMLDecodeError as e:
+    except tomlkit.TOMLDecodeError as e:
         print(f"Error decoding TOML: {e}", file=sys.stderr)
     except FileNotFoundError as e:
         print(f"Cargo.toml not found: {e}", file=sys.stderr)
