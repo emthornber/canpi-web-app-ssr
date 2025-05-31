@@ -88,6 +88,7 @@ async fn main() -> std::io::Result<()> {
                 .app_data(shared_data.clone())
                 .configure(topic_routes)
                 .configure(general_routes)
+                .service(web::scope("/").service(web::redirect("", "layout")))
                 .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
         };
         log::info!("Listening on: {}", host_port);
