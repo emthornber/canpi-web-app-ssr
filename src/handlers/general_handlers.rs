@@ -3,6 +3,7 @@ use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
 use crate::state::AppState;
+use crate::topics::convert_package_to_topic;
 
 use super::topic_handlers::status_topic;
 
@@ -26,13 +27,16 @@ pub async fn status_pkg(
     path: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
     {
-        let topic = path.into_inner();
+        let package = path.into_inner();
         let mut app_state = app_state.lock().unwrap();
         // Assume failure and reset current topic
         app_state.current_topic = None;
-        // Check that the topic is valid
-        if app_state.topics.contains_key(&topic) {
-            app_state.current_topic = Some(topic.clone());
+        // Check that the package is valid
+        if app_state.packages.contains_key(&package) {
+            let package_defn = app_state.packages.get(&package).unwrap();
+            if let Ok(topic) = convert_package_to_topic(package_defn, &package) {
+                app_state.current_topic = Some(topic);
+            }
         }
         // The mutex guard gets dropped here as app_state goes out of scope
     }

@@ -1,18 +1,15 @@
-use canpi_config::Cfg;
-use std::collections::HashMap;
+use canpi_config::{Cfg, PackageHash};
 
 /// Definition of Attributes for a Topic
 pub struct Topic {
+    pub title: String,
     pub ini_file_path: String,
     pub attr_defn: Cfg,
 }
 
-/// Type alias based on a HashMap for a set of Packages
-pub type TopicHash = HashMap<String, Topic>;
-
 pub struct AppState {
     pub layout_name: String,
     pub project_id: String,
-    pub current_topic: Option<String>,
-    pub topics: TopicHash,
+    pub current_topic: Option<Topic>,
+    pub packages: PackageHash,
 }

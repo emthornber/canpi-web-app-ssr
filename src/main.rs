@@ -9,6 +9,8 @@ use std::sync::Mutex;
 use tera::{from_value, to_value, Function, Tera, Value};
 use time::macros::format_description;
 
+use canpi_config::PackageHash;
+
 mod errors;
 mod handlers;
 mod models;
@@ -22,6 +24,8 @@ use state::AppState;
 use topics::*;
 use validation::*;
 
+use crate::errors::CanPiAppError;
+
 fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Function + 'a {
     Box::new(
         move |args: &HashMap<String, Value>| -> tera::Result<Value> {
@@ -34,6 +38,19 @@ fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Functio
             }
         },
     )
+}
+
+fn get_configured_packages(canpi_cfg: &CanpiConfig) -> Result<PackageHash, CanPiAppError> {
+    let packages = &canpi_cfg.pkg_defn.packages;
+    match packages {
+        Some(packages) => {
+            log::info!("Loaded {} packages from configuration", packages.len());
+            return Ok(packages.clone());
+        }
+        None => Err(CanPiAppError::NotFound(format!(
+            "No packages found in configuration"
+        ))),
+    }
 }
 
 #[actix_web::main]
@@ -51,47 +68,47 @@ async fn main() -> std::io::Result<()> {
 
     if let Ok(canpi_cfg) = CanpiConfig::new() {
         // Webpage formatting files
-        let static_path = canpi_cfg.static_path.unwrap();
+        let static_path = canpi_cfg.static_path.clone();
 
         // Create and load the configurations using the JSON schema files
-        let topic_hash = load_pkg_cfgs(&canpi_cfg.pkg_defn.unwrap());
-
-        // Create the top menu HTML include file
-        if let Some(tmpl_path) = canpi_cfg.template_path.clone() {
+        if let Ok(package_hash) = get_configured_packages(&canpi_cfg) {
+            // Create the top menu HTML include file
+            let tmpl_path = canpi_cfg.template_path.clone();
             let template_grandparent = Path::new(&tmpl_path)
                 .parent()
                 .and_then(Path::parent)
                 .unwrap();
             let mut format_file = template_grandparent.to_path_buf();
             format_file.push("top_menu.format");
-            if let Ok(()) = build_top_menu_html(&topic_hash, format_file.as_path()) {
+            if let Ok(()) = build_top_menu_html(&package_hash, format_file.as_path()) {
                 log::info!("Top menu created")
             } else {
                 log::warn!("Failed to create top menu");
             }
+            // Start HTTP Server
+            let host_port = canpi_cfg.host_port;
+            let shared_data = web::Data::new(Mutex::new(AppState {
+                layout_name: hostname::get()?.into_string().unwrap(),
+                project_id: "{project_id}".to_string(),
+                current_topic: None,
+                packages: package_hash,
+            }));
+            let mut tera = Tera::new(canpi_cfg.template_path.as_str()).unwrap();
+            tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
+            let app = move || {
+                App::new()
+                    .app_data(web::Data::new(tera.clone()))
+                    .app_data(shared_data.clone())
+                    .configure(topic_routes)
+                    .configure(general_routes)
+                    .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
+            };
+            log::info!("Listening on: {}", host_port);
+            HttpServer::new(app).bind(&host_port)?.run().await
         } else {
-            log::warn!("Cannot find top menu format file");
+            log::error!("Failed to load packages configuration");
+            process::exit(1);
         }
-        // Start HTTP Server
-        let host_port = canpi_cfg.host_port.unwrap();
-        let shared_data = web::Data::new(Mutex::new(AppState {
-            layout_name: hostname::get()?.into_string().unwrap(),
-            project_id: "{project_id}".to_string(),
-            current_topic: None,
-            topics: topic_hash,
-        }));
-        let mut tera = Tera::new(canpi_cfg.template_path.unwrap().as_str()).unwrap();
-        tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
-        let app = move || {
-            App::new()
-                .app_data(web::Data::new(tera.clone()))
-                .app_data(shared_data.clone())
-                .configure(topic_routes)
-                .configure(general_routes)
-                .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
-        };
-        log::info!("Listening on: {}", host_port);
-        HttpServer::new(app).bind(&host_port)?.run().await
     } else {
         log::error!("EV contents failed validation - exiting ...");
         process::exit(1);
