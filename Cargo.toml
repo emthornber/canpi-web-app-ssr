@@ -16,11 +16,11 @@ path = "src/main.rs"
 [dependencies]
 canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.5" }
 #canpi-config = { path = "../canpi-config" }
-actix-web = "4.9.0"
+actix-web = "4.11.0"
 actix-files = "0.6.5"
 # Data serialisation library
 serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
+serde_json = "1.0.141"
 serde_test = "1.0.130"
 tera = { version = "1", features = ["builtins"] }
 # JSON libraries
@@ -30,15 +30,15 @@ schemars = "0.8.10"
 anyhow = "1.0.93"
 thiserror = "2.0.12"
 # Error handling
-bcrypt = "0.15.1"
+bcrypt = "0.17.0"
 chrono = { version = "0.4.41", features = ["serde"] }
 hostname = "0.4.1"
 dotenv = "0.15.0"
-rust-ini = "0.21.0"
+rust-ini = "0.21.2"
 lazy_static = "1.5.0"
 log = "0.4.22"
 futures-util = "0.3.28"
-strfmt = "0.2.4"
+strfmt = "0.2.5"
 itertools = "0.14.0"
 time = "0.3.41"
 simple_logger = "5.0.0"
