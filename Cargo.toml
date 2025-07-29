@@ -14,8 +14,8 @@ name = "canpi-ssr"
 path = "src/main.rs"
 
 [dependencies]
-canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.5" }
-#canpi-config = { path = "../canpi-config" }
+# canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.5" }
+canpi-config = { path = "../canpi-config" }
 actix-web = "4.11.0"
 actix-files = "0.6.5"
 # Data serialisation library
@@ -23,9 +23,6 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.141"
 serde_test = "1.0.130"
 tera = { version = "1", features = ["builtins"] }
-# JSON libraries
-jsonschema = "0.30.0"
-schemars = "0.8.10"
 # Other utilities
 anyhow = "1.0.93"
 thiserror = "2.0.12"
@@ -45,4 +42,3 @@ simple_logger = "5.0.0"
 
 [dev-dependencies]
 actix-rt = "2.5.0"
-cargo-deb = "2.8.0"
