@@ -1,20 +1,21 @@
 use itertools::Itertools;
-use log;
+// use log;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 
 use crate::errors::CanPiAppError;
-use crate::state::{Topic, TopicHash};
+use crate::state::Topic;
 use canpi_config::*;
 
-pub fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
+pub fn convert_package_to_topic(pkg: &Package, title: &String) -> Result<Topic, CanPiAppError> {
     let ini_path = pkg.cfg_path.clone() + "/" + pkg.ini_file.as_str();
     if Path::new(&ini_path).is_file() {
         let json_path = pkg.cfg_path.clone() + "/" + pkg.json_file.as_str();
         if Path::new(&json_path).is_file() {
             let cfg = Cfg::new(ini_path.clone(), json_path);
             let topic = Topic {
+                title: title.clone(),
                 ini_file_path: ini_path,
                 attr_defn: cfg,
             };
@@ -31,20 +32,20 @@ pub fn convert_package_to_topic(pkg: &Package) -> Result<Topic, CanPiAppError> {
     }
 }
 
-pub fn load_pkg_cfgs(pkg_defn: &Pkg) -> TopicHash {
-    let mut topics = TopicHash::new();
-    if let Some(pkg_hash) = &pkg_defn.packages {
-        for (k, v) in pkg_hash.iter() {
-            if let Ok(attr) = convert_package_to_topic(v) {
-                topics.insert(k.to_string(), attr);
-            }
-        }
-    }
-    if topics.is_empty() {
-        log::warn!("No package attribute definitions found");
-    }
-    topics
-}
+// pub fn load_pkg_cfgs(pkg_defn: &Pkg) -> TopicHash {
+//     let mut topics = TopicHash::new();
+//     if let Some(pkg_hash) = &pkg_defn.packages {
+//         for (k, v) in pkg_hash.iter() {
+//             if let Ok(attr) = convert_package_to_topic(v) {
+//                 topics.insert(k.to_string(), attr);
+//             }
+//         }
+//     }
+//     if topics.is_empty() {
+//         log::warn!("No package attribute definitions found");
+//     }
+//     topics
+// }
 
 fn create_html_file<P: AsRef<Path>>(format_file: P) -> std::io::Result<File> {
     let mut html_file = PathBuf::from(format_file.as_ref());
@@ -53,18 +54,18 @@ fn create_html_file<P: AsRef<Path>>(format_file: P) -> std::io::Result<File> {
 }
 
 pub fn build_top_menu_html<P: AsRef<Path>>(
-    topic_hash: &TopicHash,
+    package_hash: &PackageHash,
     format_file: P,
 ) -> Result<(), CanPiAppError> {
     let mut format_defn = String::new();
     let mut file = File::open(format_file.as_ref())?;
     file.read_to_string(&mut format_defn)?;
     let mut html_file = create_html_file(format_file)?;
-    if topic_hash.is_empty() {
+    if package_hash.is_empty() {
         html_file.write_all(b"<li><br>No maintainable packages configured<br></li>")?;
     } else {
         let mut html_code = String::new();
-        for title in topic_hash.keys().sorted() {
+        for title in package_hash.keys().sorted() {
             let line = format_defn.as_str().replace("|title|", title.as_str());
             html_code.push_str(line.as_str());
         }
@@ -113,7 +114,7 @@ mod tests {
     const CFG_BAD_DATA_3: &str = r#"
         {
             "AutoHotSpot" : {
-                "cfg_path" : "/Users/thornbem/RustroverProjects/canpi-web-app-ssr/SCRATCH",
+                "cfg_path" : "/Users/thornbem/RustroverProjects/canpi-web-app-ssr/scratch",
                 "ini_file" : "hotspot_example.cfg",
                 "json_file" : "hotspot_example.json"
             }
@@ -151,15 +152,18 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "reason: requires environment variable CPSSR_HOME to be set"]
     fn cfg_bad_data_3() {
         let cfg_file = "scratch/bad_data_3.json";
         setup_file(&cfg_file, CFG_BAD_DATA_3);
         let pkg_defn = Pkg::new(&cfg_file);
         teardown_file(&cfg_file);
-        if let Some(package) = pkg_defn.packages {
-            assert!(false)
-        } else {
-            assert!(true)
+        let packages = pkg_defn.packages;
+        match packages {
+            Some(pkgs) => {
+                assert!(pkgs.is_empty())
+            }
+            None => assert!(true),
         }
     }
 }

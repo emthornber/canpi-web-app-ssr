@@ -19,27 +19,36 @@ pub struct AttrLine {
     editable: bool,
 }
 
-pub fn get_attr_defns(app_state: &mut AppState) -> Result<&mut Cfg, Error> {
-    if let Some(title) = &app_state.current_topic {
-        if let Some(topic) = app_state.topics.get_mut(title) {
-            return Ok(&mut topic.attr_defn);
-        }
+pub fn get_attr_defns(app_state: &AppState) -> Result<&Cfg, Error> {
+    if let Some(topic) = &app_state.current_topic {
+        let attr_defn = &topic.attr_defn;
+        return Ok(&attr_defn);
     }
-    Err(CanPiAppError::NotFound(
-        "Cannot read attribute definitions for {topics.current_topic}".to_string(),
+    Err(
+        CanPiAppError::NotFound("Cannot read attribute definitions for current_topic".to_string())
+            .into(),
     )
-    .into())
 }
-pub fn get_ini_file_path(app_state: &AppState) -> Result<String, Error> {
-    if let Some(title) = &app_state.current_topic {
-        if let Some(topic) = app_state.topics.get(title) {
-            return Ok(topic.ini_file_path.clone());
-        }
+
+pub fn get_mut_attr_defns(app_state: &mut AppState) -> Result<&mut Cfg, Error> {
+    if let Some(topic) = &mut app_state.current_topic {
+        let attr_defn: &mut canpi_config::Cfg = &mut topic.attr_defn;
+        return Ok(attr_defn);
     }
-    Err(CanPiAppError::NotFound(
-        "Cannot read attribute definitions for {topics.current_topic}".to_string(),
+    Err(
+        CanPiAppError::NotFound("Cannot read attribute definitions for current_topic".to_string())
+            .into(),
     )
-    .into())
+}
+
+pub fn get_ini_file_path(app_state: &AppState) -> Result<String, Error> {
+    if let Some(topic) = &app_state.current_topic {
+        return Ok(topic.ini_file_path.clone());
+    }
+    Err(
+        CanPiAppError::NotFound("Cannot read attribute definitions for current_topic".to_string())
+            .into(),
+    )
 }
 
 pub async fn status_topic(
@@ -49,7 +58,11 @@ pub async fn status_topic(
     let app_state = app_state.lock().unwrap();
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
-    ctx.insert("topic_title", &app_state.current_topic);
+    if let Some(topic) = &app_state.current_topic {
+        ctx.insert("topic_title", &topic.title);
+    } else {
+        ctx.insert("topic_title", "No topic selected");
+    };
     let s = tmpl
         .render("topic_index.html", &ctx)
         .map_err(|_| CanPiAppError::TeraError("Template error".to_string()))?;
@@ -62,8 +75,8 @@ pub async fn display_topic(
 ) -> Result<HttpResponse, Error> {
     let mut attributes: Vec<AttrLine> = Vec::new();
     let mut ordered_attr: BTreeMap<String, Attribute> = BTreeMap::new();
-    let mut app_state = app_state.lock().unwrap();
-    let attr_defn = get_attr_defns(&mut app_state)?;
+    let app_state = app_state.lock().unwrap();
+    let attr_defn = get_attr_defns(&app_state)?;
     for (n, v) in attr_defn
         .attributes_with_action(ActionBehaviour::Display)
         .iter()
@@ -90,7 +103,11 @@ pub async fn display_topic(
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
-    ctx.insert("topic_title", &app_state.current_topic);
+    if let Some(topic) = &app_state.current_topic {
+        ctx.insert("topic_title", &topic.title);
+    } else {
+        ctx.insert("topic_title", "No topic selected");
+    };
     ctx.insert("configuration", &attributes);
     let s = tmpl
         .render("topic_display.html", &ctx)
@@ -104,8 +121,8 @@ pub async fn edit_topic(
     attr_id: web::Query<AttrNameText>,
 ) -> Result<HttpResponse, Error> {
     let mut attributes: Vec<AttrLine> = Vec::new();
-    let mut app_state = app_state.lock().unwrap();
-    let attr_defn = get_attr_defns(&mut app_state)?;
+    let app_state = app_state.lock().unwrap();
+    let attr_defn = get_attr_defns(&app_state)?;
     let attribute = attr_defn.read_attribute(attr_id.name.clone());
     if let Some(v) = attribute {
         let attr = AttrLine {
@@ -120,7 +137,11 @@ pub async fn edit_topic(
         attributes.push(attr);
         let mut ctx = tera::Context::new();
         ctx.insert("layout_name", &app_state.layout_name);
-        ctx.insert("topic_title", &app_state.current_topic);
+        if let Some(topic) = &app_state.current_topic {
+            ctx.insert("topic_title", &topic.title);
+        } else {
+            ctx.insert("topic_title", "No topic selected");
+        };
         ctx.insert("configuration", &attributes);
         let s = tmpl
             .render("topic_edit.html", &ctx)
@@ -143,7 +164,7 @@ pub async fn update_topic(
     let mut _s = "(update_topic called)".to_string();
 
     let mut app_state = app_state.lock().unwrap();
-    let attr_defn = get_attr_defns(&mut app_state)?;
+    let attr_defn = get_mut_attr_defns(&mut app_state)?;
     let attr = attr_defn.read_attribute(attr_name.clone());
     if let Some(aref) = attr {
         let mut a = aref.clone();
@@ -151,7 +172,11 @@ pub async fn update_topic(
         let _ = attr_defn.write_attribute(attr_name.clone(), &a);
         let mut ctx = tera::Context::new();
         ctx.insert("layout_name", &app_state.layout_name);
-        ctx.insert("topic_title", &app_state.current_topic);
+        if let Some(topic) = &app_state.current_topic {
+            ctx.insert("topic_title", &topic.title);
+        } else {
+            ctx.insert("topic_title", "No topic selected");
+        };
         ctx.insert("attr_prompt", &attr_prompt);
         ctx.insert("current_value", &current_value);
         _s = tmpl
@@ -168,9 +193,9 @@ pub async fn save_topic(
     tmpl: web::Data<tera::Tera>,
 ) -> Result<HttpResponse, Error> {
     let mut _status_text = "(save_topic() called)".to_string();
-    let mut app_state = app_state.lock().unwrap();
+    let app_state = app_state.lock().unwrap();
     let topic_ini_file = get_ini_file_path(&app_state)?;
-    let attr_defn = get_attr_defns(&mut app_state)?;
+    let attr_defn = get_attr_defns(&app_state)?;
     if let Ok(()) = attr_defn.write_cfg_file(&topic_ini_file, Some(true)) {
         _status_text = format!("Configuration file {} updated", &topic_ini_file).to_string();
     } else {
@@ -178,7 +203,11 @@ pub async fn save_topic(
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
-    ctx.insert("topic_title", &app_state.current_topic);
+    if let Some(topic) = &app_state.current_topic {
+        ctx.insert("topic_title", &topic.title);
+    } else {
+        ctx.insert("topic_title", "No topic selected");
+    };
     ctx.insert("status", &_status_text);
     let s = tmpl
         .render("topic_save.html", &ctx)

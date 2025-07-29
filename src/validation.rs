@@ -18,11 +18,11 @@ const TEMPLATE: &str = "/templates/**/*";
 
 /// Structure that holds configuration items expanded from EVs and static text
 pub struct CanpiConfig {
-    pub config_path: Option<String>,
-    pub host_port: Option<String>,
-    pub static_path: Option<String>,
-    pub template_path: Option<String>,
-    pub pkg_defn: Option<Pkg>,
+    pub config_path: String,
+    pub host_port: String,
+    pub static_path: String,
+    pub template_path: String,
+    pub pkg_defn: Pkg,
 }
 
 impl CanpiConfig {
@@ -35,10 +35,9 @@ impl CanpiConfig {
     /// returned.
     ///
     /// If the EVs CFGFILE is not defined or does not point to a valid file
-    /// then the entries config_file and svc_defn in the struct are set to None.
+    /// then an error result is returned.
     ///
-    /// If the EV HOST_PORT is not defined then the entry in the struct is set to None.  No further
-    /// validation is done if the EV does exist.
+    /// If the EV HOST_PORT is not defined then the entry in the struct is set to "8080".
     ///
     pub fn new() -> Result<CanpiConfig, CanPiAppError> {
         let h = std::env::var("CPSSR_HOME");
@@ -49,42 +48,43 @@ impl CanpiConfig {
                     "EV CPSSR_HOME not a directory".to_string(),
                 ));
             }
-            let mut cfg = CanpiConfig {
-                config_path: None,
-                host_port: None,
-                static_path: None,
-                template_path: None,
-                pkg_defn: None,
-            };
 
             let cfile = cps_home.clone() + "/" + STATIC + CFGFILE;
-            if Path::new(&cfile).is_file() {
-                cfg.config_path = Some(cfile.clone());
-                let pkg = Pkg::new(cfile);
-                cfg.pkg_defn = Some(pkg);
-            } else {
+            if !Path::new(&cfile).is_file() {
                 return Err(CanPiAppError::NotFound(format!(
                     "Configuration file '{cfile}' not found"
                 )));
             }
 
-            if let Ok(port) = std::env::var("HOST_PORT") {
-                cfg.host_port = Some(port);
-            } else {
-                return Err(CanPiAppError::NotFound(
-                    "EV HOST_PORT not valid".to_string(),
-                ));
-            }
+            let pkg = Pkg::new(&cfile);
+
+            let port = std::env::var("HOST_PORT").unwrap_or_else(|e| {
+                log::warn!("HOST_PORT not defined, using default 8080: {}", e);
+                "8080".to_string()
+            });
+
             let sdir = cps_home.clone() + "/" + STATIC;
-            if Path::new(&sdir).is_dir() {
-                cfg.static_path = Some(sdir);
-            }
-            let tdir = cps_home.clone() + "/" + TEMPLATE;
-            let grandparent = Path::new(&tdir).parent().unwrap().parent().unwrap();
-            if grandparent.is_dir() {
-                cfg.template_path = Some(tdir);
+            if !Path::new(&sdir).is_dir() {
+                return Err(CanPiAppError::NotFound(format!(
+                    "Configuration directory '{sdir}' not found",
+                )));
             }
 
+            let tdir = cps_home.clone() + "/" + TEMPLATE;
+            let grandparent = Path::new(&tdir).parent().unwrap().parent().unwrap();
+            if !grandparent.is_dir() {
+                return Err(CanPiAppError::NotFound(format!(
+                    "Configuration directory '{tdir}' not found",
+                )));
+            }
+
+            let cfg = CanpiConfig {
+                config_path: cfile,
+                host_port: port,
+                static_path: sdir,
+                template_path: tdir,
+                pkg_defn: pkg,
+            };
             Ok(cfg)
         } else {
             Err(CanPiAppError::NotFound(

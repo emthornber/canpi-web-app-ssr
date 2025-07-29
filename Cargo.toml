@@ -14,7 +14,7 @@ name = "canpi-ssr"
 path = "src/main.rs"
 
 [dependencies]
-canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.4" }
+canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.5" }
 #canpi-config = { path = "../canpi-config" }
 actix-web = "4.11.0"
 actix-files = "0.6.5"
@@ -28,19 +28,19 @@ jsonschema = "0.30.0"
 schemars = "0.8.22"
 # Other utilities
 anyhow = "1.0.93"
-thiserror = "2.0.11"
+thiserror = "2.0.12"
 # Error handling
 bcrypt = "0.15.1"
-chrono = { version = "0.4.38", features = ["serde"] }
-hostname = "0.4.0"
+chrono = { version = "0.4.41", features = ["serde"] }
+hostname = "0.4.1"
 dotenv = "0.15.0"
 rust-ini = "0.21.0"
 lazy_static = "1.5.0"
 log = "0.4.22"
 futures-util = "0.3.28"
 strfmt = "0.2.4"
-itertools = "0.13.0"
-time = "0.3.36"
+itertools = "0.14.0"
+time = "0.3.41"
 simple_logger = "5.0.0"
 
 [dev-dependencies]
