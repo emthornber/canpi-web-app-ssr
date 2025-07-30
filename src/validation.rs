@@ -17,6 +17,7 @@ const STATIC: &str = "/static";
 const TEMPLATE: &str = "/templates/**/*";
 
 /// Structure that holds configuration items expanded from EVs and static text
+#[allow(dead_code)]
 pub struct CanpiConfig {
     pub config_path: String,
     pub host_port: String,

@@ -85,30 +85,31 @@ async fn main() -> std::io::Result<()> {
             } else {
                 log::warn!("Failed to create top menu");
             }
+            // Start HTTP Server
+            let host_port = canpi_cfg.host_port;
+            let shared_data = web::Data::new(Mutex::new(AppState {
+                layout_name: hostname::get()?.into_string().unwrap(),
+                project_id: "{project_id}".to_string(),
+                current_topic: None,
+                packages: package_hash,
+            }));
+            let mut tera = Tera::new(canpi_cfg.template_path.as_str()).unwrap();
+            tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
+            let app = move || {
+                App::new()
+                    .app_data(web::Data::new(tera.clone()))
+                    .app_data(shared_data.clone())
+                    .configure(topic_routes)
+                    .configure(general_routes)
+                    .service(web::scope("/").service(web::redirect("", "layout")))
+                    .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
+            };
+            log::info!("Listening on: {}", host_port);
+            HttpServer::new(app).bind(&host_port)?.run().await
         } else {
-            log::warn!("Cannot find top menu format file");
+            log::error!("Failed to load packages configuration");
+            process::exit(1);
         }
-        // Start HTTP Server
-        let host_port = canpi_cfg.host_port.unwrap();
-        let shared_data = web::Data::new(Mutex::new(AppState {
-            layout_name: hostname::get()?.into_string().unwrap(),
-            project_id: "{project_id}".to_string(),
-            current_topic: None,
-            packages: package_hash,
-        }));
-        let mut tera = Tera::new(canpi_cfg.template_path.unwrap().as_str()).unwrap();
-        tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
-        let app = move || {
-            App::new()
-                .app_data(web::Data::new(tera.clone()))
-                .app_data(shared_data.clone())
-                .configure(topic_routes)
-                .configure(general_routes)
-                .service(web::scope("/").service(web::redirect("", "layout")))
-                .service(fs::Files::new("/static", static_path.clone()).show_files_listing())
-        };
-        log::info!("Listening on: {}", host_port);
-        HttpServer::new(app).bind(&host_port)?.run().await
     } else {
         log::error!("EV contents failed validation - exiting ...");
         process::exit(1);
