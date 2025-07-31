@@ -143,10 +143,10 @@ mod tests {
     #[test]
     fn check_html_file_name() {
         let file_name_root = Path::new("templates");
-        let mut format_file = file_name_root;
+        let format_file = file_name_root;
         let mut format_file = format_file.join("top_menu.format");
-        let mut html_file = file_name_root;
-        let mut html_file = html_file.join("top_menu.html");
+        let html_file = file_name_root;
+        let html_file = html_file.join("top_menu.html");
         format_file.set_extension("html");
         assert_eq!(format_file, html_file);
     }
