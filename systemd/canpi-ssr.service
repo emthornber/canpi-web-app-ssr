@@ -6,7 +6,6 @@ Before=multi-user.target
 Before=graphical.target
 # A list of units whose activations will occur before this unit starts.
 After=remote-fs.target
-After=multi-user.target
 After=network-online.target
 # A list of units to activate when this one is activated, if any unit listed here fails this unit will deactivate.
 #Requires=
