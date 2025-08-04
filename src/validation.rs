@@ -38,7 +38,7 @@ impl CanpiConfig {
     /// If the EVs CFGFILE is not defined or does not point to a valid file
     /// then an error result is returned.
     ///
-    /// If the EV HOST_PORT is not defined then the entry in the struct is set to "8080".
+    /// If the EV HOST_PORT is not defined then the entry in the struct is set to "0.0.0.0:8080".
     ///
     pub fn new() -> Result<CanpiConfig, CanPiAppError> {
         let h = std::env::var("CPSSR_HOME");
@@ -60,8 +60,8 @@ impl CanpiConfig {
             let pkg = Pkg::new(&cfile);
 
             let port = std::env::var("HOST_PORT").unwrap_or_else(|e| {
-                log::warn!("HOST_PORT not defined, using default 8080: {}", e);
-                "8080".to_string()
+                log::warn!("HOST_PORT not defined, using default 0.0.0.0:8080: {}", e);
+                "0.0.0.0:8080".to_string()
             });
 
             let sdir = cps_home.clone() + "/" + STATIC;

@@ -12,6 +12,12 @@
 #   3 November, 2024 - E M Thornber
 #   Deleted log files before pkg removal
 #
+#   4 August, 2025 - E M Thornber
+#   Added canpi-ssrctl.bash script to control the canpi-ssr service
+#   Added PIDFile to service definition
+#   Added Environment variables to service definition and removed separate
+#   config file
+#   
 ################################################################################
 #
 $target="canpi-ssr"
@@ -25,7 +31,6 @@ $bindir=/usr/local/bin
 $docdir=/usr/local/share/doc/${target}
 $logdir=/var/log/${target}
 $systemd=/usr/lib/systemd/system
-$srvdir=/etc/systemd/system/${target}.service.d
 # Sources
 $sysdir=${srcdir}/systemd
 $scratch=${srcdir}/scratch
@@ -33,7 +38,7 @@ $static=${srcdir}/static
 $templates=${srcdir}/templates
 
 %product Maintain Hotspot and CanPi configurations
-%copyright 2024 MERG
+%copyright 2024-2025 MERG
 %vendor Enchanted Systems Limited
 %license LICENSE
 %readme README.md
@@ -44,9 +49,6 @@ $templates=${srcdir}/templates
 
 d 755 root root /etc -
 d 755 root root /etc/logrotate.d -
-d 755 root root /etc/systemd -
-d 755 root root /etc/systemd/system -
-d 755 root root ${srvdir} -
 d 755 root root /usr -
 d 755 root root /usr/lib -
 d 755 root root /usr/lib/systemd -
@@ -66,9 +68,9 @@ d 755 root root /var/log -
 d 755 root root ${logdir} -
 
 # canpi-ssr daemon, control script, and service definition
-f 755 root root ${bindir}/${target} ${binary}
+f 755 root root ${bindir}/${target}    ${binary}
+f 755 root root ${bindir}/${target}ctl ${sysdir}/${target}ctl.bash
 f 644 root root ${systemd}/${SERVICE}  ${sysdir}/${SERVICE}
-f 644 root root ${srvdir}/${target}.conf ${sysdir}/${target}.conf
 
 # canpi-ssr configuration files
 f 644 root root ${home}/scratch   ${scratch}/*

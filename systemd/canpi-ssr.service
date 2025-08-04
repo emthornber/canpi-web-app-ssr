@@ -2,13 +2,16 @@
 # A short human readable title of the unit
 Description=A webserver to maintain CANPiCAP and CANPiZero configuration files.
 # A list of units whose activations will wait until after this unit has completed.
-#Before=
+Before=multi-user.target
+Before=graphical.target
 # A list of units whose activations will occur before this unit starts.
+After=remote-fs.target
 After=multi-user.target
+After=network-online.target
 # A list of units to activate when this one is activated, if any unit listed here fails this unit will deactivate.
 #Requires=
 # A list of units to activate when this one is activated, if a unit listed here fails this unit will continue to run.
-#Wants=
+Wants=network-online.target
 
 [Service]
 # Configures the process start-up type for this service unit, one of:
@@ -16,14 +19,23 @@ After=multi-user.target
 # forking - The process defined in ExecStart= will fork a background process and exit right away.
 # oneshot - The process will exit right away, use with RemainAfterExit= to ensure the serice is marked as active.
 # Consult the documentantion for types (https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=) other options.
-Type=simple
-# Command with arguments to invoke when the unit is activated.
-ExecStart=/bin/bash -c "/usr/local/bin/canpi-ssr >>/var/log/canpi-ssr/stdout.log 2>>/var/log/canpi-ssr/stderr.log"
-# Command with arguments to invoke when the unit is deactivated.
-#ExecStop=
+Type=forking
 # Configures under what conditions the unit will be restarted.
 Restart=on-failure
+KillMode=process
+GuessMainPID=no
+SuccessExitStatus=SIGKILL
+WorkingDirectory=/usr/local/etc/canpi-ssr
+# Command with arguments to invoke when the unit is activated.
+ExecStart=/usr/local/bin/canpi-ssrctl start
+# Command with arguments to invoke when the unit is deactivated.
+ExecStop=/usr/local/bin/canpi-ssrctl stop
+ExecReload=/usr/local/bin/canpi-ssrctl restart
+PIDFile=/run/canpi-ssr.pid
+# A list of environment variables to set for the service.
 Environment="CPSSR_HOME=/usr/local/etc/canpi-ssr"
+Environment="HOST_PORT=0.0.0.0:8080"
+Environment="RUST_LOG=WARN"
 
 [Install]
 # A list of units who when activated will try and activate this unit
