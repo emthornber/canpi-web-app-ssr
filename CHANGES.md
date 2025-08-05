@@ -1,5 +1,14 @@
 #
 
+canpi-web-app-ssr (0.1.9) bookworm; urgency=low
+
+- Issues 1, 2 & 3 resolved
+    1. Connecting to `http://<addr>:<port>` will redirect the user to `http://<addr>:<port>/layout`
+    1. The top level menu code has been refactored to (re)read the menu item
+    configuration files when the menu option is selected.
+    1. After rewriting the systemd service definition and adding a control
+    script the executable now runs on both 32 and 64 bit RPiOS
+
 canpi-web-app-ssr (0.1.8) bookworm; urgency=low
 
 - Made the build process architecture-agnostic
