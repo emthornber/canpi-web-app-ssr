@@ -20,6 +20,7 @@ target/
 *.log
 *.gz
 top_menu.html
+topic_menu.html
 
 # Python venv
 bin/

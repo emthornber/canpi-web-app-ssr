@@ -34,4 +34,4 @@ release:
 	cargo build --release
 
 test:
-	cargo test
+	cargo test -- --test-threads=1

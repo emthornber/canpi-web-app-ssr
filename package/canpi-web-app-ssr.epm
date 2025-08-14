@@ -97,6 +97,7 @@ ${SCTL} stop ${SERVICE}
 ${SCTL} disable ${SERVICE}
 
 rm -f ${home}/templates/top_menu.html
+rm -f ${home}/templates/topic_menu.html
 rm -f ${logdir}/stderr.*
 rm -f ${logdir}/stdout.*
 

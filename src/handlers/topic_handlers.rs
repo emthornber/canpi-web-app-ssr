@@ -2,11 +2,14 @@ use actix_web::{web, Error, HttpResponse, Result};
 use canpi_config::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::path::PathBuf;
 use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
 use crate::models::{AttrNameText, EditAttrForm};
 use crate::state::AppState;
+use crate::topics::build_topic_menu_html;
+// use crate::validation::CanpiConfig;
 
 #[derive(Serialize, Deserialize)]
 pub struct AttrLine {
@@ -51,6 +54,25 @@ pub fn get_ini_file_path(app_state: &AppState) -> Result<String, Error> {
     )
 }
 
+pub fn restart_service(app_state: &AppState) -> Result<String, Error> {
+    if let Some(topic) = &app_state.current_topic {
+        if let Some(service_name) = &topic.service_name {
+            if let Ok(()) = topic.restart_topic() {
+                return Ok(service_name.clone());
+            } else {
+                return Err(
+                    CanPiAppError::Other("Failed to restart service ".to_string().into()).into(),
+                );
+            }
+        }
+        return Err(CanPiAppError::NotFound(
+            "Service name not found for current topic".to_string(),
+        )
+        .into());
+    }
+    Err(CanPiAppError::NotFound("No topic selected".to_string()).into())
+}
+
 pub async fn status_topic(
     app_state: web::Data<Mutex<AppState>>,
     tmpl: web::Data<tera::Tera>,
@@ -59,6 +81,15 @@ pub async fn status_topic(
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
     if let Some(topic) = &app_state.current_topic {
+        // Create the topic menu HTML include file
+        let tmpl_root = app_state.template_root.clone();
+        let mut format_file = PathBuf::from(tmpl_root);
+        format_file.push("topic_menu.format");
+        if let Ok(()) = build_topic_menu_html(&topic, format_file.as_path()) {
+            log::info!("Top menu created")
+        } else {
+            log::warn!("Failed to create top menu");
+        }
         ctx.insert("topic_title", &topic.title);
     } else {
         ctx.insert("topic_title", "No topic selected");
@@ -199,7 +230,7 @@ pub async fn save_topic(
     if let Ok(()) = attr_defn.write_cfg_file(&topic_ini_file, Some(true)) {
         _status_text = format!("Configuration file {} updated", &topic_ini_file).to_string();
     } else {
-        _status_text = format!("Failed to updated {}", &topic_ini_file).to_string();
+        _status_text = format!("Failed to update {}", &topic_ini_file).to_string();
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
@@ -212,6 +243,31 @@ pub async fn save_topic(
     let s = tmpl
         .render("topic_save.html", &ctx)
         .map_err(|_| CanPiAppError::TeraError("topic_save.html".to_string()))?;
+    Ok(HttpResponse::Ok().content_type("text/html").body(s))
+}
+
+pub async fn restart_topic(
+    app_state: web::Data<Mutex<AppState>>,
+    tmpl: web::Data<tera::Tera>,
+) -> Result<HttpResponse, Error> {
+    let mut _status_text = "(restart_topic() called)".to_string();
+    let app_state = app_state.lock().unwrap();
+    if let Ok(topic_service_name) = restart_service(&app_state) {
+        _status_text = format!("Service {} restarted", &topic_service_name).to_string();
+    } else {
+        _status_text = format!("Failed to restart service").to_string();
+    }
+    let mut ctx = tera::Context::new();
+    ctx.insert("layout_name", &app_state.layout_name);
+    if let Some(topic) = &app_state.current_topic {
+        ctx.insert("topic_title", &topic.title);
+    } else {
+        ctx.insert("topic_title", "No topic selected");
+    };
+    ctx.insert("status", &_status_text);
+    let s = tmpl
+        .render("topic_restart.html", &ctx)
+        .map_err(|_| CanPiAppError::TeraError("topic_restart.html".to_string()))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 

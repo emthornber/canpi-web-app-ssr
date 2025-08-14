@@ -9,6 +9,7 @@ const CONFIRM: &str = "/confirm";
 const DISPLAY: &str = "/display";
 const EDIT: &str = "/edit";
 const PKG: &str = "/pkg";
+const RESTART: &str = "/restart";
 const SAVE: &str = "/save";
 const TITLE: &str = "/pkg/{title}";
 const TOPIC: &str = "/topic";
@@ -24,6 +25,7 @@ lazy_static! {
         map.insert("display", format!("{LAYOUT}{TOPIC}{DISPLAY}"));
         map.insert("edit", format!("{LAYOUT}{TOPIC}{EDIT}"));
         map.insert("pkg", format!("{LAYOUT}{PKG}"));
+        map.insert("restart", format!("{LAYOUT}{TOPIC}{RESTART}"));
         map.insert("save", format!("{LAYOUT}{TOPIC}{SAVE}"));
         map.insert("topic", format!("{LAYOUT}{TOPIC}"));
         map.insert("update", format!("{LAYOUT}{TOPIC}{UPDATE}"));
@@ -46,6 +48,7 @@ pub fn topic_routes(cfg: &mut web::ServiceConfig) {
             .service(web::resource("").route(web::get().to(status_topic)))
             .service(web::resource(DISPLAY).route(web::get().to(display_topic)))
             .service(web::resource(EDIT).route(web::get().to(edit_topic)))
+            .service(web::resource(RESTART).route(web::get().to(restart_topic)))
             .service(web::resource(SAVE).route(web::get().to(save_topic)))
             .service(web::resource(UPDATE).route(web::post().to(update_topic))),
     );

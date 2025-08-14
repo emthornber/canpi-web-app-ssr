@@ -23,6 +23,7 @@ pub struct CanpiConfig {
     pub host_port: String,
     pub static_path: String,
     pub template_path: String,
+    pub template_root: String,
     pub pkg_defn: Pkg,
 }
 
@@ -72,7 +73,8 @@ impl CanpiConfig {
             }
 
             let tdir = cps_home.clone() + "/" + TEMPLATE;
-            let grandparent = Path::new(&tdir).parent().unwrap().parent().unwrap();
+            let gpath = tdir.clone();
+            let grandparent = Path::new(&gpath).parent().unwrap().parent().unwrap();
             if !grandparent.is_dir() {
                 return Err(CanPiAppError::NotFound(format!(
                     "Configuration directory '{tdir}' not found",
@@ -84,6 +86,7 @@ impl CanpiConfig {
                 host_port: port,
                 static_path: sdir,
                 template_path: tdir,
+                template_root: grandparent.to_string_lossy().to_string(),
                 pkg_defn: pkg,
             };
             Ok(cfg)

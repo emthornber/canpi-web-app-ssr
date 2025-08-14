@@ -3,7 +3,7 @@ use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::PathBuf;
 use std::process;
 use std::sync::Mutex;
 use tera::{from_value, to_value, Function, Tera, Value};
@@ -73,12 +73,7 @@ async fn main() -> std::io::Result<()> {
         // Create and load the configurations using the JSON schema files
         if let Ok(package_hash) = get_configured_packages(&canpi_cfg) {
             // Create the top menu HTML include file
-            let tmpl_path = canpi_cfg.template_path.clone();
-            let template_grandparent = Path::new(&tmpl_path)
-                .parent()
-                .and_then(Path::parent)
-                .unwrap();
-            let mut format_file = template_grandparent.to_path_buf();
+            let mut format_file = PathBuf::from(canpi_cfg.template_root.clone());
             format_file.push("top_menu.format");
             if let Ok(()) = build_top_menu_html(&package_hash, format_file.as_path()) {
                 log::info!("Top menu created")
@@ -90,6 +85,7 @@ async fn main() -> std::io::Result<()> {
             let shared_data = web::Data::new(Mutex::new(AppState {
                 layout_name: hostname::get()?.into_string().unwrap(),
                 project_id: "{project_id}".to_string(),
+                template_root: canpi_cfg.template_root.clone(),
                 current_topic: None,
                 packages: package_hash,
             }));
