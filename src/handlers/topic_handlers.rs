@@ -86,7 +86,7 @@ pub async fn status_topic(
         let mut format_file = PathBuf::from(tmpl_root);
         format_file.push("topic_menu.format");
         if let Ok(()) = build_topic_menu_html(&topic, format_file.as_path()) {
-            log::info!("Top menu created")
+            log::info!("Topic menu created")
         } else {
             log::warn!("Failed to create top menu");
         }

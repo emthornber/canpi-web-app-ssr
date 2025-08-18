@@ -13,11 +13,14 @@ pub fn check_service_name(service_name: &Option<String>) -> Option<String> {
         let svc_path = "/lib/systemd/system/";
         let service_file = svc_path.to_owned() + name.as_str() + ".service";
         if Path::new(&service_file).is_file() {
+            log::debug!("Service '{}' exists at '{}'", name, service_file);
             Some(name.clone())
         } else {
+            log::debug!("Service '{}' does not exist at '{}'", name, service_file);
             None
         }
     } else {
+        log::debug!("No service name provided");
         None
     }
 }
@@ -98,9 +101,9 @@ pub fn build_topic_menu_html<P: AsRef<Path>>(
     let mut file = File::open(format_file.as_ref())?;
     file.read_to_string(&mut format_defn)?;
     let mut html_file = create_html_file(format_file)?;
-    let mut visibility = "hidden";
+    let mut visibility = "<li hidden>";
     if let Some(_name) = topic.service_name.as_ref() {
-        visibility = "";
+        visibility = "<li>";
     }
     let mut html_code = String::new();
     let line = format_defn.as_str().replace("|visibility|", visibility);
@@ -229,7 +232,7 @@ mod tests {
         assert_eq!(topic.service_name.unwrap(), "ssh");
     }
 
-    // This will chkeck that the missing service_name is
+    // This will check that the missing service_name is 'None'
     #[test]
     fn cfg_full_data_2() {
         let packages = setup_pkgs(CFG_FULL_DATA);
@@ -272,5 +275,41 @@ mod tests {
         assert_eq!(packages.len(), 1);
         let topic = convert_package_to_topic(&packages["AutoHotSpot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
+    }
+
+    #[test]
+    fn visibility_yes_test() {
+        let packages = setup_pkgs(CFG_FULL_DATA);
+        assert!(packages.is_some());
+        let packages = packages.unwrap();
+        assert_eq!(packages.len(), 2);
+        let topic = convert_package_to_topic(&packages["CANPiServer"], &"CANPiServer".to_string());
+        assert!(topic.is_ok());
+        let topic = topic.unwrap();
+        let format_file = PathBuf::from("templates/topic_menu.format");
+        let result = build_topic_menu_html(&topic, format_file);
+        assert!(result.is_ok());
+        let mut html_defn = String::new();
+        let mut file = File::open(Path::new("templates/topic_menu.html")).unwrap();
+        file.read_to_string(&mut html_defn).unwrap();
+        assert!(html_defn.contains("<li>"));
+    }
+
+    #[test]
+    fn visibility_no_test() {
+        let packages = setup_pkgs(CFG_FULL_DATA);
+        assert!(packages.is_some());
+        let packages = packages.unwrap();
+        assert_eq!(packages.len(), 2);
+        let topic = convert_package_to_topic(&packages["AutoHotSpot"], &"AutoHotSpot".to_string());
+        assert!(topic.is_ok());
+        let topic = topic.unwrap();
+        let format_file = PathBuf::from("templates/topic_menu.format");
+        let result = build_topic_menu_html(&topic, format_file);
+        assert!(result.is_ok());
+        let mut html_defn = String::new();
+        let mut file = File::open(Path::new("templates/topic_menu.html")).unwrap();
+        file.read_to_string(&mut html_defn).unwrap();
+        assert!(html_defn.contains("<li hidden>"));
     }
 }
