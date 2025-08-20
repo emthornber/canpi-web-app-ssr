@@ -8,7 +8,7 @@ use crate::errors::CanPiAppError;
 use crate::state::Topic;
 use canpi_config::*;
 
-pub fn check_service_name(service_name: &Option<String>) -> Option<String> {
+pub fn check_service_name(service_name: Option<String>) -> Option<String> {
     if let Some(name) = service_name {
         let svc_path = "/lib/systemd/system/";
         let service_file = svc_path.to_owned() + name.as_str() + ".service";
@@ -35,7 +35,7 @@ pub fn convert_package_to_topic(pkg: &Package, title: &String) -> Result<Topic, 
                 title: title.clone(),
                 ini_file_path: ini_path,
                 attr_defn: cfg,
-                service_name: check_service_name(&pkg.service_name.clone()),
+                service_name: check_service_name(pkg.service_name.clone()),
             };
             Ok(topic)
         } else {
@@ -102,7 +102,7 @@ pub fn build_topic_menu_html<P: AsRef<Path>>(
     file.read_to_string(&mut format_defn)?;
     let mut html_file = create_html_file(format_file)?;
     let mut visibility = "<li hidden>";
-    if let Some(_name) = topic.service_name.as_ref() {
+    if let Some(_name) = topic.service_name.clone() {
         visibility = "<li>";
     }
     let mut html_code = String::new();
@@ -196,7 +196,7 @@ mod tests {
     #[test]
     fn service_name_exists() {
         let service_name = Some("systemd-halt".to_string());
-        let svc_name = check_service_name(&service_name);
+        let svc_name = check_service_name(service_name);
         assert!(svc_name.is_some());
         assert_eq!(svc_name.unwrap(), "systemd-halt");
     }
@@ -204,14 +204,14 @@ mod tests {
     #[test]
     fn service_name_does_not_exist() {
         let service_name = Some("nonexistent-service".to_string());
-        let svc_name = check_service_name(&service_name);
+        let svc_name = check_service_name(service_name);
         assert!(svc_name.is_none());
     }
 
     #[test]
     fn service_name_none() {
         let service_name: Option<String> = None;
-        let svc_name = check_service_name(&service_name);
+        let svc_name = check_service_name(service_name);
         assert!(svc_name.is_none());
     }
 
@@ -292,6 +292,7 @@ mod tests {
         let mut html_defn = String::new();
         let mut file = File::open(Path::new("templates/topic_menu.html")).unwrap();
         file.read_to_string(&mut html_defn).unwrap();
+        println!("HTML Definition: {}", html_defn);
         assert!(html_defn.contains("<li>"));
     }
 
@@ -310,6 +311,7 @@ mod tests {
         let mut html_defn = String::new();
         let mut file = File::open(Path::new("templates/topic_menu.html")).unwrap();
         file.read_to_string(&mut html_defn).unwrap();
+        println!("HTML Definition: {}", html_defn);
         assert!(html_defn.contains("<li hidden>"));
     }
 }

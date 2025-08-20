@@ -4,9 +4,10 @@
         "ini_file": "hotspot.cfg",
         "json_file": "hotspot.json"
     },
-    "CANPi Server": {
+    "CANPiServer": {
         "cfg_path": "/usr/local/etc/canpi",
         "ini_file": "canpi.cfg",
-        "json_file": "canpi.json"
+        "json_file": "canpi.json",
+        "service_name": "canpid"
     }
 }

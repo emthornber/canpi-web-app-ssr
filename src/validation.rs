@@ -51,7 +51,7 @@ impl CanpiConfig {
                 ));
             }
 
-            let cfile = cps_home.clone() + "/" + STATIC + CFGFILE;
+            let cfile = cps_home.clone() + STATIC + CFGFILE;
             if !Path::new(&cfile).is_file() {
                 return Err(CanPiAppError::NotFound(format!(
                     "Configuration file '{cfile}' not found"
@@ -65,14 +65,14 @@ impl CanpiConfig {
                 "0.0.0.0:8080".to_string()
             });
 
-            let sdir = cps_home.clone() + "/" + STATIC;
+            let sdir = cps_home.clone() + STATIC;
             if !Path::new(&sdir).is_dir() {
                 return Err(CanPiAppError::NotFound(format!(
                     "Configuration directory '{sdir}' not found",
                 )));
             }
 
-            let tdir = cps_home.clone() + "/" + TEMPLATE;
+            let tdir = cps_home.clone() + TEMPLATE;
             let gpath = tdir.clone();
             let grandparent = Path::new(&gpath).parent().unwrap().parent().unwrap();
             if !grandparent.is_dir() {
