@@ -50,21 +50,6 @@ pub fn convert_package_to_topic(pkg: &Package, title: &String) -> Result<Topic, 
     }
 }
 
-// pub fn load_pkg_cfgs(pkg_defn: &Pkg) -> TopicHash {
-//     let mut topics = TopicHash::new();
-//     if let Some(pkg_hash) = &pkg_defn.packages {
-//         for (k, v) in pkg_hash.iter() {
-//             if let Ok(attr) = convert_package_to_topic(v) {
-//                 topics.insert(k.to_string(), attr);
-//             }
-//         }
-//     }
-//     if topics.is_empty() {
-//         log::warn!("No package attribute definitions found");
-//     }
-//     topics
-// }
-
 fn create_html_file<P: AsRef<Path>>(format_file: P) -> std::io::Result<File> {
     let mut html_file = PathBuf::from(format_file.as_ref());
     html_file.set_extension("html");
@@ -80,7 +65,7 @@ pub fn build_top_menu_html<P: AsRef<Path>>(
     file.read_to_string(&mut format_defn)?;
     let mut html_file = create_html_file(format_file)?;
     if package_hash.is_empty() {
-        html_file.write_all(b"<li><br>No maintainable packages configured<br></li>")?;
+        html_file.write_all(b"<li><br>No maintainable packages configured</br></li>")?;
     } else {
         let mut html_code = String::new();
         for title in package_hash.keys().sorted() {
@@ -93,29 +78,29 @@ pub fn build_top_menu_html<P: AsRef<Path>>(
     Ok(())
 }
 
-pub fn build_topic_menu_html<P: AsRef<Path>>(
-    topic: &Topic,
-    format_file: P,
-) -> Result<(), CanPiAppError> {
-    let mut format_defn = String::new();
-    let mut file = File::open(format_file.as_ref())?;
-    file.read_to_string(&mut format_defn)?;
-    let mut html_file = create_html_file(format_file)?;
-    let mut visibility = "<li hidden>";
-    if let Some(_name) = topic.service_name.clone() {
-        visibility = "<li>";
+pub fn select_topic_menu_html(topic: &Option<Topic>) -> &str {
+    match topic {
+        Some(t) => match t.service_name {
+            Some(_) => "topic_index_ds_and_r.html",
+            None => "topic_index_ds.html",
+        },
+        None => "topic_index_none.html",
     }
-    let mut html_code = String::new();
-    let line = format_defn.as_str().replace("|visibility|", visibility);
-    html_code.push_str(line.as_str());
-    html_file.write_all(&html_code.into_bytes())?;
-
-    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use env_logger::Target;
+    use log::LevelFilter;
+
+    fn init_logging() {
+        let _ = env_logger::builder()
+            .target(Target::Stdout)
+            .filter_level(LevelFilter::max())
+            .is_test(true)
+            .try_init();
+    }
 
     // Test data service_name is checking a service on the dev machine
     const CFG_FULL_DATA: &str = r#"
@@ -195,6 +180,9 @@ mod tests {
 
     #[test]
     fn service_name_exists() {
+        // Initialise Logger
+        init_logging();
+
         let service_name = Some("systemd-halt".to_string());
         let svc_name = check_service_name(service_name);
         assert!(svc_name.is_some());
@@ -203,6 +191,9 @@ mod tests {
 
     #[test]
     fn service_name_does_not_exist() {
+        // Initialise Logger
+        init_logging();
+
         let service_name = Some("nonexistent-service".to_string());
         let svc_name = check_service_name(service_name);
         assert!(svc_name.is_none());
@@ -210,6 +201,9 @@ mod tests {
 
     #[test]
     fn service_name_none() {
+        // Initialise Logger
+        init_logging();
+
         let service_name: Option<String> = None;
         let svc_name = check_service_name(service_name);
         assert!(svc_name.is_none());
@@ -219,6 +213,9 @@ mod tests {
     // This will check that the ini_file_path and service_name are set correctly
     #[test]
     fn cfg_full_data_1() {
+        // Initialise Logger
+        init_logging();
+
         let packages = setup_pkgs(CFG_FULL_DATA);
         assert!(packages.is_some());
         let packages = packages.unwrap();
@@ -235,6 +232,9 @@ mod tests {
     // This will check that the missing service_name is 'None'
     #[test]
     fn cfg_full_data_2() {
+        // Initialise Logger
+        init_logging();
+
         let packages = setup_pkgs(CFG_FULL_DATA);
         assert!(packages.is_some());
         let packages = packages.unwrap();
@@ -249,6 +249,9 @@ mod tests {
 
     #[test]
     fn cfg_bad_data_1() {
+        // Initialise Logger
+        init_logging();
+
         let packages = setup_pkgs(CFG_BAD_DATA_1);
         assert!(packages.is_some());
         let packages = packages.unwrap();
@@ -259,6 +262,9 @@ mod tests {
 
     #[test]
     fn cfg_bad_data_2() {
+        // Initialise Logger
+        init_logging();
+
         let packages = setup_pkgs(CFG_BAD_DATA_2);
         assert!(packages.is_some());
         let packages = packages.unwrap();
@@ -269,6 +275,9 @@ mod tests {
 
     #[test]
     fn cfg_bad_data_3() {
+        // Initialise Logger
+        init_logging();
+
         let packages = setup_pkgs(CFG_BAD_DATA_3);
         assert!(packages.is_some());
         let packages = packages.unwrap();

@@ -14,8 +14,8 @@ name = "canpi-ssr"
 path = "src/main.rs"
 
 [dependencies]
-canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.7" }
-# canpi-config = { path = "../canpi-config" }
+# canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.7" }
+canpi-config = { path = "../canpi-config" }
 actix-web = "4.11.0"
 actix-files = "0.6.5"
 # Data serialisation library
@@ -39,6 +39,7 @@ strfmt = "0.2.5"
 itertools = "0.14.0"
 time = "0.3.41"
 simple_logger = "5.0.0"
+env_logger = "0.11.8"
 
 [dev-dependencies]
 actix-rt = "2.5.0"

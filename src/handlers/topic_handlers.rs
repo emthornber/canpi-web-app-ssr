@@ -8,7 +8,7 @@ use std::sync::Mutex;
 use crate::errors::CanPiAppError;
 use crate::models::{AttrNameText, EditAttrForm};
 use crate::state::AppState;
-use crate::topics::build_topic_menu_html;
+use crate::topics::select_topic_menu_html;
 // use crate::validation::CanpiConfig;
 
 #[derive(Serialize, Deserialize)]
@@ -80,22 +80,14 @@ pub async fn status_topic(
     let app_state = app_state.lock().unwrap();
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
-    if let Some(topic) = &app_state.current_topic {
-        // Create the topic menu HTML include file
-        let tmpl_root = app_state.template_root.clone();
-        let mut format_file = PathBuf::from(tmpl_root);
-        format_file.push("topic_menu.format");
-        if let Ok(()) = build_topic_menu_html(&topic, format_file.as_path()) {
-            log::info!("Topic menu created")
-        } else {
-            log::warn!("Failed to create top menu");
-        }
+    let index_file = select_topic_menu_html(&app_state.current_topic);
+    if let Some(topic) = app_state.current_topic.clone() {
         ctx.insert("topic_title", &topic.title);
     } else {
         ctx.insert("topic_title", "No topic selected");
     };
     let s = tmpl
-        .render("topic_index.html", &ctx)
+        .render(index_file, &ctx)
         .map_err(|_| CanPiAppError::TeraError("Template error".to_string()))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }

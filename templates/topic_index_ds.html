@@ -6,7 +6,6 @@
 {% block menu %}
 <li><a href='{{ scope_for(scope="display") }}'>Display</a></li>
 <li><a href='{{ scope_for(scope="save") }}'>Save</a></li>
-{% include "topic_menu.html" ignore missing %}
 {% endblock menu %}
 {% block content %}
 <div>

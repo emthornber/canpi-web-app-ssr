@@ -500,8 +500,7 @@ dependencies = [
 
 [[package]]
 name = "canpi-config"
-version = "0.1.7"
-source = "git+https://github.com/emthornber/canpi-config.git?tag=v0.1.7#9600fd1b857f84b8b9a977b6102fdf08c1f29af9"
+version = "0.1.8"
 dependencies = [
  "anyhow",
  "backitup",
@@ -532,6 +531,7 @@ dependencies = [
  "canpi-config",
  "chrono",
  "dotenv",
+ "env_logger",
  "futures-util",
  "hostname",
  "itertools",

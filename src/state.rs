@@ -2,6 +2,7 @@ use crate::errors::CanPiAppError;
 use canpi_config::{Cfg, PackageHash};
 
 /// Definition of Attributes for a Topic
+#[derive(Clone)]
 pub struct Topic {
     pub title: String,
     pub ini_file_path: String,
