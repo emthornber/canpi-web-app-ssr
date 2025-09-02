@@ -24,7 +24,13 @@
         <div class="item2">
             <ul>
                 <li><a href='{{ scope_for(scope="root") }}'>Home</a></li>
-                {% block menu %}{% endblock menu %}
+                {% block menu %}
+                {% for item in menu_items %}
+                <li><a href='{{ scope_for(scope=item.scope) }}'>{{ item.prompt }}</a></li>
+                {% else %}
+                <br>No menu items configured<br>
+                {% endfor %}
+                {% endblock menu %}
             </ul>
         </div>
         <div class="item3">

@@ -58,6 +58,7 @@ pub async fn status_topic(
     let app_state = app_state.lock().unwrap();
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
+    ctx.insert("menu_items", &app_state.topic_menu);
     if let Some(topic) = &app_state.current_topic {
         ctx.insert("topic_title", &topic.title);
     } else {
@@ -103,6 +104,7 @@ pub async fn display_topic(
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
+    ctx.insert("menu_items", &app_state.topic_menu);
     if let Some(topic) = &app_state.current_topic {
         ctx.insert("topic_title", &topic.title);
     } else {
@@ -137,6 +139,7 @@ pub async fn edit_topic(
         attributes.push(attr);
         let mut ctx = tera::Context::new();
         ctx.insert("layout_name", &app_state.layout_name);
+        ctx.insert("menu_items", &app_state.topic_menu);
         if let Some(topic) = &app_state.current_topic {
             ctx.insert("topic_title", &topic.title);
         } else {
@@ -172,6 +175,7 @@ pub async fn update_topic(
         let _ = attr_defn.write_attribute(attr_name.clone(), &a);
         let mut ctx = tera::Context::new();
         ctx.insert("layout_name", &app_state.layout_name);
+        ctx.insert("menu_items", &app_state.topic_menu);
         if let Some(topic) = &app_state.current_topic {
             ctx.insert("topic_title", &topic.title);
         } else {
@@ -203,6 +207,7 @@ pub async fn save_topic(
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
+    ctx.insert("menu_items", &app_state.topic_menu);
     if let Some(topic) = &app_state.current_topic {
         ctx.insert("topic_title", &topic.title);
     } else {

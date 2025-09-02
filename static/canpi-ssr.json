@@ -1,12 +1,14 @@
 {
-    "HotSpot": {
+    "auto-wap": {
         "cfg_path": "/usr/local/etc/hotspot",
         "ini_file": "hotspot.cfg",
-        "json_file": "hotspot.json"
+        "json_file": "hotspot.json",
+        "title": "HotSpot"
     },
     "CANPi Server": {
         "cfg_path": "/usr/local/etc/canpi",
         "ini_file": "canpi.cfg",
-        "json_file": "canpi.json"
+        "json_file": "canpi.json",
+        "service_name": "canpid"
     }
 }

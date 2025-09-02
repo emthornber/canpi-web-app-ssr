@@ -3,7 +3,6 @@ use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
-use std::path::Path;
 use std::process;
 use std::sync::Mutex;
 use tera::{from_value, to_value, Function, Tera, Value};
@@ -24,7 +23,7 @@ use state::AppState;
 use topics::*;
 use validation::*;
 
-use crate::errors::CanPiAppError;
+use crate::{errors::CanPiAppError, state::MenuItems};
 
 fn make_scope_for<'a>(scopes: &'static HashMap<&'a str, String>) -> impl Function + 'a {
     Box::new(
@@ -72,26 +71,15 @@ async fn main() -> std::io::Result<()> {
 
         // Create and load the configurations using the JSON schema files
         if let Ok(package_hash) = get_configured_packages(&canpi_cfg) {
-            // Create the top menu HTML include file
-            let tmpl_path = canpi_cfg.template_path.clone();
-            let template_grandparent = Path::new(&tmpl_path)
-                .parent()
-                .and_then(Path::parent)
-                .unwrap();
-            let mut format_file = template_grandparent.to_path_buf();
-            format_file.push("top_menu.format");
-            if let Ok(()) = build_top_menu_html(&package_hash, format_file.as_path()) {
-                log::info!("Top menu created")
-            } else {
-                log::warn!("Failed to create top menu");
-            }
             // Start HTTP Server
             let host_port = canpi_cfg.host_port;
             let shared_data = web::Data::new(Mutex::new(AppState {
                 layout_name: hostname::get()?.into_string().unwrap(),
                 project_id: "{project_id}".to_string(),
                 current_topic: None,
+                main_menu: build_main_menu(&package_hash),
                 packages: package_hash,
+                topic_menu: MenuItems::new(),
             }));
             let mut tera = Tera::new(canpi_cfg.template_path.as_str()).unwrap();
             tera.register_function("scope_for", make_scope_for(&ROUTE_DATA));
