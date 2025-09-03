@@ -1,11 +1,7 @@
-use itertools::Itertools;
-// use log;
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::errors::CanPiAppError;
-use crate::state::Topic;
+use crate::state::{Menu, MenuItems, Topic};
 use canpi_config::*;
 
 pub fn check_service_name(service_name: Option<String>) -> Option<String> {
@@ -50,42 +46,45 @@ pub fn convert_package_to_topic(pkg: &Package, title: &String) -> Result<Topic, 
     }
 }
 
-fn create_html_file<P: AsRef<Path>>(format_file: P) -> std::io::Result<File> {
-    let mut html_file = PathBuf::from(format_file.as_ref());
-    html_file.set_extension("html");
-    File::create(html_file)
-}
-
-pub fn build_top_menu_html<P: AsRef<Path>>(
-    package_hash: &PackageHash,
-    format_file: P,
-) -> Result<(), CanPiAppError> {
-    let mut format_defn = String::new();
-    let mut file = File::open(format_file.as_ref())?;
-    file.read_to_string(&mut format_defn)?;
-    let mut html_file = create_html_file(format_file)?;
+pub fn build_main_menu(package_hash: &PackageHash) -> MenuItems {
+    let mut menu_items: MenuItems = Vec::new();
     if package_hash.is_empty() {
-        html_file.write_all(b"<li><br>No maintainable packages configured</br></li>")?;
+        log::warn!("No packages defined in configuration");
     } else {
-        let mut html_code = String::new();
-        for title in package_hash.keys().sorted() {
-            let line = format_defn.as_str().replace("|title|", title.as_str());
-            html_code.push_str(line.as_str());
+        // Create the menu items from the package definitions
+        for (scope, pkg) in package_hash.iter() {
+            let item = Menu {
+                scope: scope.to_string(),
+                prompt: match &pkg.title {
+                    Some(t) => t.clone(),
+                    None => scope.to_string(),
+                },
+            };
+            menu_items.push(item);
         }
-        html_file.write_all(&html_code.into_bytes())?;
+        log::info!("Main menu created with {} items", menu_items.len());
     }
-
-    Ok(())
+    menu_items
 }
 
-pub fn select_topic_menu_html(topic: &Option<Topic>) -> &str {
-    match topic {
-        Some(t) => match t.service_name {
-            Some(_) => "topic_index_ds_and_r.html",
-            None => "topic_index_ds.html",
-        },
-        None => "topic_index_none.html",
-    }
+pub fn build_topic_menu(topic: &Topic) -> MenuItems {
+    let mut menu_items: MenuItems = Vec::new();
+    let item_display = Menu {
+        scope: "display".to_string(),
+        prompt: "Display".to_string(),
+    };
+    menu_items.push(item_display);
+    let item_save = Menu {
+        scope: "save".to_string(),
+        prompt: "Save".to_string(),
+    };
+    menu_items.push(item_save);
+    log::info!(
+        "Topic menu created for '{}' with {} items",
+        topic.title,
+        menu_items.len()
+    );
+    menu_items
 }
 
 #[cfg(test)]

@@ -1,15 +1,11 @@
 {% extends "topic_index.html" %}
 {% block title %}Configuration{% endblock title %}
-{% block head %}
-{{ super() }}
-{% endblock head %}
-{% block menu %}
-{{ super() }}
-{% endblock menu %}
+{% block head %} {{ super() }} {% endblock head %}
+{% block menu %} {{ super() }} {% endblock menu %}
 {% block content %}
 <div>
-<h2>{{ layout_name }}</h2>
-<h3>Updated {{ topic_title }} Attribute</h3>
+    <h2>{{ layout_name }}</h2>
+    <h3>Updated {{ topic_title }} Attribute</h3>
     <table id="attributes">
         <tr>
             <th>Name</th>
@@ -25,6 +21,4 @@
     </form>
 </div>
 {% endblock content %}
-{% block footer %}
-{{ super() }}
-{% endblock footer %}
+{% block footer %} {{ super() }} {% endblock footer %}

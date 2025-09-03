@@ -3,7 +3,7 @@ use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
 use crate::state::AppState;
-use crate::topics::convert_package_to_topic;
+use crate::topics::{build_topic_menu, convert_package_to_topic};
 
 use super::topic_handlers::status_topic;
 
@@ -15,6 +15,7 @@ pub async fn status_handler(
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
     ctx.insert("project_id", &app_state.project_id);
+    ctx.insert("menu_items", &app_state.main_menu);
     let s = tmpl
         .render("index.html", &ctx)
         .map_err(|_| CanPiAppError::TeraError("Template error".to_string()))?;
@@ -35,7 +36,8 @@ pub async fn status_pkg(
         if app_state.packages.contains_key(&package) {
             let package_defn = app_state.packages.get(&package).unwrap();
             if let Ok(topic) = convert_package_to_topic(package_defn, &package) {
-                app_state.current_topic = Some(topic);
+                app_state.current_topic = Some(topic.clone());
+                app_state.topic_menu = build_topic_menu(&topic);
             }
         }
         // The mutex guard gets dropped here as app_state goes out of scope
