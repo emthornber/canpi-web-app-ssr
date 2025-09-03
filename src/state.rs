@@ -1,7 +1,8 @@
 use canpi_config::{Cfg, PackageHash};
+use serde::Serialize;
 
 /// Menu Structure
-#[derive(serde::Serialize)]
+#[derive(Serialize)]
 pub struct Menu {
     /// Target of pressing menu item
     pub scope: String,

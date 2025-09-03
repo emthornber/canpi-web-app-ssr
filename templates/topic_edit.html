@@ -13,7 +13,7 @@
     <input type="hidden" id="{{attr.name}}-name" name="name" value={{attr.name}}>
     <input type="hidden" id="{{attr.name}}-prompt" name="prompt" value="{{attr.prompt}}">
     <br>
-    <input type="button" onclick='location.replace("{{ scope_for(scope=display) }}")' value="Cancel">
+    <input type="button" onclick='location.replace("{{ scope_for(scope=`display`) }}")' value="Cancel">
     <input type="submit" value="Update">
 </form>
 {% endfor %}
