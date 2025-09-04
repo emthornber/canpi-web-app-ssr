@@ -1,1 +1,0 @@
-|visibility|<a href='{{ scope_for(scope="restart") }}'>Restart</a></li>

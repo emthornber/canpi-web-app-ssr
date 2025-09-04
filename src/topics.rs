@@ -92,6 +92,9 @@ mod tests {
     use super::*;
     use env_logger::Target;
     use log::LevelFilter;
+    use std::fs::File;
+    use std::io::Write;
+    use std::path::Path;
 
     fn init_logging() {
         let _ = env_logger::builder()
@@ -167,17 +170,6 @@ mod tests {
     }
 
     #[test]
-    fn check_html_file_name() {
-        let file_name_root = Path::new("templates");
-        let format_file = file_name_root;
-        let mut format_file = format_file.join("top_menu.format");
-        let html_file = file_name_root;
-        let html_file = html_file.join("top_menu.html");
-        format_file.set_extension("html");
-        assert_eq!(format_file, html_file);
-    }
-
-    #[test]
     fn service_name_exists() {
         // Initialise Logger
         init_logging();
@@ -219,7 +211,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 2);
-        let topic = convert_package_to_topic(&packages["CANPiServer"], &"CANPiServer".to_string());
+        let topic = convert_package_to_topic(&packages["canpiserver"], &"CANPiServer".to_string());
         assert!(topic.is_ok());
         let topic = topic.unwrap();
         assert_eq!(topic.title, "CANPiServer");
@@ -238,7 +230,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 2);
-        let topic = convert_package_to_topic(&packages["AutoHotSpot"], &"AutoHotSpot".to_string());
+        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_ok());
         let topic = topic.unwrap();
         assert_eq!(topic.title, "AutoHotSpot");
@@ -255,7 +247,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 1);
-        let topic = convert_package_to_topic(&packages["AutoHotSpot"], &"AutoHotSpot".to_string());
+        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
     }
 
@@ -268,7 +260,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 1);
-        let topic = convert_package_to_topic(&packages["AutoHotSpot"], &"AutoHotSpot".to_string());
+        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
     }
 
@@ -281,45 +273,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 1);
-        let topic = convert_package_to_topic(&packages["AutoHotSpot"], &"AutoHotSpot".to_string());
+        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
-    }
-
-    #[test]
-    fn visibility_yes_test() {
-        let packages = setup_pkgs(CFG_FULL_DATA);
-        assert!(packages.is_some());
-        let packages = packages.unwrap();
-        assert_eq!(packages.len(), 2);
-        let topic = convert_package_to_topic(&packages["CANPiServer"], &"CANPiServer".to_string());
-        assert!(topic.is_ok());
-        let topic = topic.unwrap();
-        let format_file = PathBuf::from("templates/topic_menu.format");
-        let result = build_topic_menu_html(&topic, format_file);
-        assert!(result.is_ok());
-        let mut html_defn = String::new();
-        let mut file = File::open(Path::new("templates/topic_menu.html")).unwrap();
-        file.read_to_string(&mut html_defn).unwrap();
-        println!("HTML Definition: {}", html_defn);
-        assert!(html_defn.contains("<li>"));
-    }
-
-    #[test]
-    fn visibility_no_test() {
-        let packages = setup_pkgs(CFG_FULL_DATA);
-        assert!(packages.is_some());
-        let packages = packages.unwrap();
-        assert_eq!(packages.len(), 2);
-        let topic = convert_package_to_topic(&packages["AutoHotSpot"], &"AutoHotSpot".to_string());
-        assert!(topic.is_ok());
-        let topic = topic.unwrap();
-        let format_file = PathBuf::from("templates/topic_menu.format");
-        let result = build_topic_menu_html(&topic, format_file);
-        assert!(result.is_ok());
-        let mut html_defn = String::new();
-        let mut file = File::open(Path::new("templates/topic_menu.html")).unwrap();
-        file.read_to_string(&mut html_defn).unwrap();
-        println!("HTML Definition: {}", html_defn);
-        assert!(html_defn.contains("<li hidden>"));
     }
 }

@@ -2,13 +2,11 @@ use actix_web::{web, Error, HttpResponse, Result};
 use canpi_config::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-use std::path::PathBuf;
 use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
 use crate::models::{AttrNameText, EditAttrForm};
 use crate::state::AppState;
-use crate::topics::select_topic_menu_html;
 // use crate::validation::CanpiConfig;
 
 #[derive(Serialize, Deserialize)]
@@ -87,7 +85,7 @@ pub async fn status_topic(
         ctx.insert("topic_title", "No topic selected");
     };
     let s = tmpl
-        .render(index_file, &ctx)
+        .render("topic_index.html", &ctx)
         .map_err(|_| CanPiAppError::TeraError("Template error".to_string()))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }

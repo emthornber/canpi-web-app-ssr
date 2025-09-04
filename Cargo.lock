@@ -501,6 +501,7 @@ dependencies = [
 [[package]]
 name = "canpi-config"
 version = "0.1.8"
+source = "git+https://github.com/emthornber/canpi-config.git?tag=v0.1.8#c97d82be197c65c58c709a5144219d6635d46840"
 dependencies = [
  "anyhow",
  "backitup",

@@ -44,7 +44,6 @@ impl Topic {
 pub struct AppState {
     pub layout_name: String,
     pub project_id: String,
-    pub template_root: String,
     pub current_topic: Option<Topic>,
     pub packages: PackageHash,
     pub main_menu: MenuItems,

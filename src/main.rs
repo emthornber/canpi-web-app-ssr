@@ -76,7 +76,6 @@ async fn main() -> std::io::Result<()> {
             let shared_data = web::Data::new(Mutex::new(AppState {
                 layout_name: hostname::get()?.into_string().unwrap(),
                 project_id: "{project_id}".to_string(),
-                template_root: canpi_cfg.template_root.clone(),
                 current_topic: None,
                 main_menu: build_main_menu(&package_hash),
                 packages: package_hash,
