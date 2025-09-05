@@ -253,6 +253,7 @@ pub async fn restart_topic(
     }
     let mut ctx = tera::Context::new();
     ctx.insert("layout_name", &app_state.layout_name);
+    ctx.insert("menu_items", &app_state.topic_menu);
     if let Some(topic) = &app_state.current_topic {
         ctx.insert("topic_title", &topic.title);
     } else {

@@ -12,6 +12,7 @@
             <th>Value</th>
             <th>Type</th>
         </tr>
+        {% set edit_scope = scope_for(scope="edit") %}
         {% for attr in configuration %}
         <tr>
             <td>
@@ -27,7 +28,7 @@
             <td>{{attr.value}}</td>
             <td>
                 {% if attr.editable %}
-                <form action='{{ scope_for(scope="edit") }}' method="get">
+                <form action='{{ edit_scope }}' method="get">
                     <input type="hidden" id="{{attr.name}}" name="name" value={{attr.name}}>
                     <input type="submit" value="Edit">
                 </form>

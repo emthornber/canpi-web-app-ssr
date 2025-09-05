@@ -5,8 +5,10 @@ use serde::Serialize;
 /// Menu Structure
 #[derive(Serialize)]
 pub struct Menu {
-    /// Target of pressing menu item
+    /// Scope of target, e.g., "pkg"
     pub scope: String,
+    /// Target of the menu item
+    pub target: String,
     /// Text to display for menu item
     pub prompt: String,
 }

@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::process::Command;
 
 use crate::errors::CanPiAppError;
 use crate::state::{Menu, MenuItems, Topic};
@@ -52,12 +53,13 @@ pub fn build_main_menu(package_hash: &PackageHash) -> MenuItems {
         log::warn!("No packages defined in configuration");
     } else {
         // Create the menu items from the package definitions
-        for (scope, pkg) in package_hash.iter() {
+        for (target, pkg) in package_hash.iter() {
             let item = Menu {
-                scope: scope.to_string(),
+                scope: "pkg".to_string(),
+                target: target.to_string(),
                 prompt: match &pkg.title {
                     Some(t) => t.clone(),
-                    None => scope.to_string(),
+                    None => target.to_string(),
                 },
             };
             menu_items.push(item);
@@ -67,18 +69,28 @@ pub fn build_main_menu(package_hash: &PackageHash) -> MenuItems {
     menu_items
 }
 
+const TOPIC_MENU_ITEMS: [(&str, &str); 3] = [
+    ("display", "Display"),
+    ("save", "Save"),
+    ("restart", "Restart"),
+];
+
 pub fn build_topic_menu(topic: &Topic) -> MenuItems {
     let mut menu_items: MenuItems = Vec::new();
-    let item_display = Menu {
-        scope: "display".to_string(),
-        prompt: "Display".to_string(),
-    };
-    menu_items.push(item_display);
-    let item_save = Menu {
-        scope: "save".to_string(),
-        prompt: "Save".to_string(),
-    };
-    menu_items.push(item_save);
+    for (target, prompt) in TOPIC_MENU_ITEMS.iter() {
+        // If the topic service_name is undefined then skip the restart option
+        if *target == "restart" {
+            if topic.service_name.is_none() {
+                continue;
+            }
+        }
+        let item = Menu {
+            scope: "topic".to_string(),
+            target: target.to_string(),
+            prompt: prompt.to_string(),
+        };
+        menu_items.push(item);
+    }
     log::info!(
         "Topic menu created for '{}' with {} items",
         topic.title,
@@ -217,6 +229,8 @@ mod tests {
         assert_eq!(topic.title, "CANPiServer");
         assert_eq!(topic.ini_file_path, "scratch/canpi_example.cfg");
         assert!(topic.service_name.is_some());
+        let menu = build_topic_menu(&topic);
+        assert_eq!(menu.len(), 3);
         assert_eq!(topic.service_name.unwrap(), "ssh");
     }
 
@@ -236,6 +250,8 @@ mod tests {
         assert_eq!(topic.title, "AutoHotSpot");
         assert_eq!(topic.ini_file_path, "scratch/hotspot_example.cfg");
         assert!(topic.service_name.is_none());
+        let menu = build_topic_menu(&topic);
+        assert_eq!(menu.len(), 2);
     }
 
     #[test]
