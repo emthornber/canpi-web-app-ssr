@@ -2,8 +2,8 @@ use actix_web::{web, Error, HttpResponse, Result};
 use std::sync::Mutex;
 
 use crate::errors::CanPiAppError;
-use crate::state::AppState;
-use crate::topics::{build_topic_menu, convert_package_to_topic};
+use crate::state::{build_topic_menu, AppState};
+use crate::topic::Topic;
 
 use super::topic_handlers::status_topic;
 
@@ -35,7 +35,7 @@ pub async fn status_pkg(
         // Check that the package is valid
         if app_state.packages.contains_key(&package) {
             let package_defn = app_state.packages.get(&package).unwrap();
-            if let Ok(topic) = convert_package_to_topic(package_defn, &package) {
+            if let Ok(topic) = Topic::new(package_defn, &package) {
                 app_state.current_topic = Some(topic.clone());
                 app_state.topic_menu = build_topic_menu(&topic);
             }

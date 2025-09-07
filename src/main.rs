@@ -15,12 +15,11 @@ mod handlers;
 mod models;
 mod routes;
 mod state;
-mod topics;
+mod topic;
 mod validation;
 
 use routes::*;
-use state::AppState;
-use topics::*;
+use state::*;
 use validation::*;
 
 use crate::{errors::CanPiAppError, state::MenuItems};

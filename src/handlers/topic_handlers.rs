@@ -52,21 +52,15 @@ pub fn get_ini_file_path(app_state: &AppState) -> Result<String, Error> {
     )
 }
 
-pub fn restart_service(app_state: &AppState) -> Result<String, Error> {
+pub fn topic_restart(app_state: &AppState) -> Result<String, Error> {
     if let Some(topic) = &app_state.current_topic {
-        if let Some(service_name) = &topic.service_name {
-            if let Ok(()) = topic.restart_topic() {
-                return Ok(service_name.clone());
-            } else {
-                return Err(
-                    CanPiAppError::Other("Failed to restart service ".to_string().into()).into(),
-                );
-            }
+        if let Ok(service_name) = topic.restart_service() {
+            return Ok(service_name.clone());
+        } else {
+            return Err(
+                CanPiAppError::Other("Failed to restart service ".to_string().into()).into(),
+            );
         }
-        return Err(CanPiAppError::NotFound(
-            "Service name not found for current topic".to_string(),
-        )
-        .into());
     }
     Err(CanPiAppError::NotFound("No topic selected".to_string()).into())
 }
@@ -246,7 +240,7 @@ pub async fn restart_topic(
 ) -> Result<HttpResponse, Error> {
     let mut _status_text = "(restart_topic() called)".to_string();
     let app_state = app_state.lock().unwrap();
-    if let Ok(topic_service_name) = restart_service(&app_state) {
+    if let Ok(topic_service_name) = topic_restart(&app_state) {
         _status_text = format!("Service {} restarted", &topic_service_name).to_string();
     } else {
         _status_text = format!("Failed to restart service").to_string();

@@ -2,106 +2,112 @@ use std::path::Path;
 use std::process::Command;
 
 use crate::errors::CanPiAppError;
-use crate::state::{Menu, MenuItems, Topic};
 use canpi_config::*;
 
-pub fn check_service_name(service_name: Option<String>) -> Option<String> {
-    if let Some(name) = service_name {
-        let svc_path = "/lib/systemd/system/";
-        let service_file = svc_path.to_owned() + name.as_str() + ".service";
-        if Path::new(&service_file).is_file() {
-            log::debug!("Service '{}' exists at '{}'", name, service_file);
-            Some(name.clone())
+/// Definition of Attributes for a Topic
+#[derive(Debug, Clone)]
+pub struct Topic {
+    pub title: String,
+    pub ini_file_path: String,
+    pub attr_defn: Cfg,
+    /// Optional service name without the .service suffix
+    /// This is used to check if the service exists in the systemd directory.
+    /// If the service exists, it will be stored here; otherwise, it will be None
+    /// This is used to determine if the topic can be restarted.
+    pub service_name: Option<String>,
+}
+
+impl Topic {
+    pub fn restart_service(&self) -> Result<String, CanPiAppError> {
+        // Logic to restart the topic service
+        if let Some(service_name) = &self.service_name {
+            if let Ok(()) = Self::call_systemctl("restart", service_name) {
+                log::info!("Service '{}' restarted successfully", service_name);
+            } else {
+                log::error!("Failed to restart service '{}'", service_name);
+                return Err(CanPiAppError::Other(
+                    format!("Failed to restart service '{}'", service_name).into(),
+                ));
+            }
+            Ok(service_name.clone())
         } else {
-            log::debug!("Service '{}' does not exist at '{}'", name, service_file);
+            Err(CanPiAppError::NotFound(
+                "Service name not found for topic".to_string(),
+            ))
+        }
+    }
+
+    fn call_systemctl(action: &str, service_name: &str) -> Result<(), CanPiAppError> {
+        if let Ok(output) = Command::new("systemctl")
+            .arg(action)
+            .arg(service_name)
+            .output()
+        {
+            log::debug!("systemctl {} {} output: {:?}", action, service_name, output);
+            if output.status.success() {
+                Ok(())
+            } else {
+                let msg = format!(
+                    "systemctl {} {} failed with status: {}",
+                    action, service_name, output.status
+                );
+                Err(CanPiAppError::Other(msg.to_string().into()).into())
+            }
+        } else {
+            let msg = format!("Failed to execute systemctl {} {}", action, service_name);
+            log::error!("{}", msg);
+
+            Err(CanPiAppError::Other(msg.to_string().into()).into())
+        }
+    }
+
+    fn check_service_name(service_name: Option<String>) -> Option<String> {
+        if let Some(name) = service_name {
+            let svc_path = "/lib/systemd/system/";
+            let service_file = svc_path.to_owned() + name.as_str() + ".service";
+            if Path::new(&service_file).is_file() {
+                log::debug!("Service '{}' exists at '{}'", name, service_file);
+                Some(name.clone())
+            } else {
+                log::debug!("Service '{}' does not exist at '{}'", name, service_file);
+                None
+            }
+        } else {
+            log::debug!("No service name provided");
             None
         }
-    } else {
-        log::debug!("No service name provided");
-        None
     }
-}
 
-pub fn convert_package_to_topic(pkg: &Package, title: &String) -> Result<Topic, CanPiAppError> {
-    let ini_path = pkg.cfg_path.clone() + "/" + pkg.ini_file.as_str();
-    if Path::new(&ini_path).is_file() {
-        let json_path = pkg.cfg_path.clone() + "/" + pkg.json_file.as_str();
-        if Path::new(&json_path).is_file() {
-            let cfg = Cfg::new(ini_path.clone(), json_path);
-            let topic = Topic {
-                title: title.clone(),
-                ini_file_path: ini_path,
-                attr_defn: cfg,
-                service_name: check_service_name(pkg.service_name.clone()),
-            };
-            Ok(topic)
+    pub fn new(pkg: &Package, title: &String) -> Result<Topic, CanPiAppError> {
+        let ini_path = pkg.cfg_path.clone() + "/" + pkg.ini_file.as_str();
+        if Path::new(&ini_path).is_file() {
+            let json_path = pkg.cfg_path.clone() + "/" + pkg.json_file.as_str();
+            if Path::new(&json_path).is_file() {
+                let cfg = Cfg::new(ini_path.clone(), json_path);
+                let topic = Topic {
+                    title: title.clone(),
+                    ini_file_path: ini_path,
+                    attr_defn: cfg,
+                    service_name: Self::check_service_name(pkg.service_name.clone()),
+                };
+                Ok(topic)
+            } else {
+                Err(CanPiAppError::NotFound(format!(
+                    "Json file '{json_path}' not found"
+                )))
+            }
         } else {
             Err(CanPiAppError::NotFound(format!(
-                "Json file '{json_path}' not found"
+                "Configuration file '{ini_path}' not found"
             )))
         }
-    } else {
-        Err(CanPiAppError::NotFound(format!(
-            "Configuration file '{ini_path}' not found"
-        )))
     }
-}
-
-pub fn build_main_menu(package_hash: &PackageHash) -> MenuItems {
-    let mut menu_items: MenuItems = Vec::new();
-    if package_hash.is_empty() {
-        log::warn!("No packages defined in configuration");
-    } else {
-        // Create the menu items from the package definitions
-        for (target, pkg) in package_hash.iter() {
-            let item = Menu {
-                scope: "pkg".to_string(),
-                target: target.to_string(),
-                prompt: match &pkg.title {
-                    Some(t) => t.clone(),
-                    None => target.to_string(),
-                },
-            };
-            menu_items.push(item);
-        }
-        log::info!("Main menu created with {} items", menu_items.len());
-    }
-    menu_items
-}
-
-const TOPIC_MENU_ITEMS: [(&str, &str); 3] = [
-    ("display", "Display"),
-    ("save", "Save"),
-    ("restart", "Restart"),
-];
-
-pub fn build_topic_menu(topic: &Topic) -> MenuItems {
-    let mut menu_items: MenuItems = Vec::new();
-    for (target, prompt) in TOPIC_MENU_ITEMS.iter() {
-        // If the topic service_name is undefined then skip the restart option
-        if *target == "restart" {
-            if topic.service_name.is_none() {
-                continue;
-            }
-        }
-        let item = Menu {
-            scope: "topic".to_string(),
-            target: target.to_string(),
-            prompt: prompt.to_string(),
-        };
-        menu_items.push(item);
-    }
-    log::info!(
-        "Topic menu created for '{}' with {} items",
-        topic.title,
-        menu_items.len()
-    );
-    menu_items
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::state::build_topic_menu;
     use env_logger::Target;
     use log::LevelFilter;
     use std::fs::File;
@@ -187,7 +193,7 @@ mod tests {
         init_logging();
 
         let service_name = Some("systemd-halt".to_string());
-        let svc_name = check_service_name(service_name);
+        let svc_name = Topic::check_service_name(service_name);
         assert!(svc_name.is_some());
         assert_eq!(svc_name.unwrap(), "systemd-halt");
     }
@@ -198,7 +204,7 @@ mod tests {
         init_logging();
 
         let service_name = Some("nonexistent-service".to_string());
-        let svc_name = check_service_name(service_name);
+        let svc_name = Topic::check_service_name(service_name);
         assert!(svc_name.is_none());
     }
 
@@ -208,11 +214,11 @@ mod tests {
         init_logging();
 
         let service_name: Option<String> = None;
-        let svc_name = check_service_name(service_name);
+        let svc_name = Topic::check_service_name(service_name);
         assert!(svc_name.is_none());
     }
 
-    // Test converting package to topic
+    // Test creating topic from package
     // This will check that the ini_file_path and service_name are set correctly
     #[test]
     fn cfg_full_data_1() {
@@ -223,7 +229,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 2);
-        let topic = convert_package_to_topic(&packages["canpiserver"], &"CANPiServer".to_string());
+        let topic = Topic::new(&packages["canpiserver"], &"CANPiServer".to_string());
         assert!(topic.is_ok());
         let topic = topic.unwrap();
         assert_eq!(topic.title, "CANPiServer");
@@ -244,7 +250,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 2);
-        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
+        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_ok());
         let topic = topic.unwrap();
         assert_eq!(topic.title, "AutoHotSpot");
@@ -263,7 +269,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 1);
-        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
+        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
     }
 
@@ -276,7 +282,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 1);
-        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
+        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
     }
 
@@ -289,7 +295,7 @@ mod tests {
         assert!(packages.is_some());
         let packages = packages.unwrap();
         assert_eq!(packages.len(), 1);
-        let topic = convert_package_to_topic(&packages["autohotspot"], &"AutoHotSpot".to_string());
+        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
     }
 }

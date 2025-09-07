@@ -1,5 +1,5 @@
-use crate::errors::CanPiAppError;
-use canpi_config::{Cfg, PackageHash};
+use crate::topic::Topic;
+use canpi_config::PackageHash;
 use serde::Serialize;
 
 /// Menu Structure
@@ -16,33 +16,58 @@ pub struct Menu {
 /// Type alias for Menu Vector
 pub type MenuItems = Vec<Menu>;
 
-/// Definition of Attributes for a Topic
-#[derive(Debug, Clone)]
-pub struct Topic {
-    pub title: String,
-    pub ini_file_path: String,
-    pub attr_defn: Cfg,
-    /// Optional service name without the .service suffix
-    /// This is used to check if the service exists in the systemd directory.
-    /// If the service exists, it will be stored here; otherwise, it will be None
-    /// This is used to determine if the topic can be restarted.
-    pub service_name: Option<String>,
+pub fn build_main_menu(package_hash: &PackageHash) -> MenuItems {
+    let mut menu_items: MenuItems = Vec::new();
+    if package_hash.is_empty() {
+        log::warn!("No packages defined in configuration");
+    } else {
+        // Create the menu items from the package definitions
+        for (target, pkg) in package_hash.iter() {
+            let item = Menu {
+                scope: "pkg".to_string(),
+                target: target.to_string(),
+                prompt: match &pkg.title {
+                    Some(t) => t.clone(),
+                    None => target.to_string(),
+                },
+            };
+            menu_items.push(item);
+        }
+        log::info!("Main menu created with {} items", menu_items.len());
+    }
+    menu_items
 }
 
-impl Topic {
-    pub fn restart_topic(&self) -> Result<(), CanPiAppError> {
-        // Logic to restart the topic service
-        if let Some(service_name) = &self.service_name {
-            // Restart logic here, e.g., using systemctl
-            // For now, we just return Ok to simulate success
-            Ok(())
-        } else {
-            Err(CanPiAppError::NotFound(
-                "Service name not found for topic".to_string(),
-            ))
+const TOPIC_MENU_ITEMS: [(&str, &str); 3] = [
+    ("display", "Display"),
+    ("save", "Save"),
+    ("restart", "Restart"),
+];
+
+pub fn build_topic_menu(topic: &Topic) -> MenuItems {
+    let mut menu_items: MenuItems = Vec::new();
+    for (target, prompt) in TOPIC_MENU_ITEMS.iter() {
+        // If the topic service_name is undefined then skip the restart option
+        if *target == "restart" {
+            if topic.service_name.is_none() {
+                continue;
+            }
         }
+        let item = Menu {
+            scope: "topic".to_string(),
+            target: target.to_string(),
+            prompt: prompt.to_string(),
+        };
+        menu_items.push(item);
     }
+    log::info!(
+        "Topic menu created for '{}' with {} items",
+        topic.title,
+        menu_items.len()
+    );
+    menu_items
 }
+
 pub struct AppState {
     pub layout_name: String,
     pub project_id: String,
