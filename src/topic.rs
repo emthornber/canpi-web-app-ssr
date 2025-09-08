@@ -168,6 +168,16 @@ mod tests {
             }
         }"#;
 
+    const CFG_BAD_DATA_4: &str = r#"
+        {
+            "AutoHotSpot" : {
+                "cfg_path" : "scratch",
+                "ini_file" : "hotspot_example.cfg",
+                "json_file" : "hotspot_example.json",
+                "service_name" : "nonexistent-service"
+            }
+        }"#;
+
     // Common functions
     fn setup_file<P: AsRef<Path>>(test_file: P, data: &str) {
         let mut f = File::create(&test_file)
@@ -297,5 +307,63 @@ mod tests {
         assert_eq!(packages.len(), 1);
         let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
         assert!(topic.is_err());
+    }
+
+    #[test]
+    fn call_systemctl_invalid_service() {
+        // Initialise Logger
+        init_logging();
+
+        let result = Topic::call_systemctl("status", "nonexistent-service");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn call_systemctl_bad_action() {
+        // Initialise Logger
+        init_logging();
+
+        let result = Topic::call_systemctl("badaction", "ssh");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn call_systemctl_valid_service() {
+        // Initialise Logger
+        init_logging();
+        let result = Topic::call_systemctl("status", "ssh");
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn restart_service_missing_service() {
+        // Initialise Logger
+        init_logging();
+
+        let packages = setup_pkgs(CFG_FULL_DATA);
+        assert!(packages.is_some());
+        let packages = packages.unwrap();
+        assert_eq!(packages.len(), 2);
+        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
+        assert!(topic.is_ok());
+        let topic = topic.unwrap();
+        let result = topic.restart_service();
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn restart_service_invalid_service() {
+        // Initialise Logger
+        init_logging();
+
+        let packages = setup_pkgs(CFG_BAD_DATA_4);
+        assert!(packages.is_some());
+        let packages = packages.unwrap();
+        assert_eq!(packages.len(), 1);
+        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
+        assert!(topic.is_ok());
+        let topic = topic.unwrap();
+        let result = topic.restart_service();
+        assert!(result.is_err());
     }
 }
