@@ -1,0 +1,31 @@
+=encoding utf8
+
+=head1 NAME
+
+canpi-ssr - maintain INI-type configuration files
+
+=head1 SYNOPSIS
+
+(B<canpi-ssr> is a web application and is controlled by I<systemd> as a service)
+
+=head1 ENVIRONMENT
+
+=over
+
+=item *
+
+B<CPSSR_HOME> - Directory containing the configuration file (usually C</usr/local/etc/canpi-ssr/>)
+
+=item *
+
+B<HOST_PORT> - Address and port to bind the webserver to (default: C<0.0.0.0:8080>)
+
+=item *
+
+B<RUST_LOG> - Logging level (default: C<WARN>)
+
+=back
+
+=head1 SEE ALSO
+
+L<canpi-ssr.conf(5)>

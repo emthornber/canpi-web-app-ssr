@@ -13,7 +13,7 @@ export VERS := ${shell python3 extract_value_from_toml_file.py -k version}
 
 all: clean package
 
-.PHONY: all build clean documents release test package
+.PHONY: all build clean documents manpages release test package
 
 build:
 	cargo build
@@ -27,7 +27,10 @@ documents: \
 changelog.Debian.gz: CHANGES.md
 	gzip -c $< > $@
  
-package: release documents
+manpages:
+	( cd $@ ; $(MAKE) clean ; $(MAKE) all )
+
+package: release documents manpages
 	$(MAKE) -f $@/Makefile pkgs
 
 release:
