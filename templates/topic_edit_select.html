@@ -1,0 +1,25 @@
+{% extends "topic_index.html" %}
+{% block title %}Configuration{% endblock title %}
+{% block head %} {{ super() }} {% endblock head %}
+{% block menu %} {{ super() }} {% endblock menu %}
+{% block content %}
+<h2>{{ layout_name }}</h2>
+<h3>Edit {{ topic_title }} Attribute</h3>
+{% set display_scope = scope_for(scope="display") %}
+{% for attr in configuration %}
+<form action='{{ scope_for(scope="update") }}' method="post">
+    <label for="{{attr.name}}-value">{{attr.prompt}}:</label>
+    <select id="{{attr.name}}-value" name="value">
+        {% for option in attr.select %}
+        <option value="{{ option }}" {% if option==attr.value %}selected{% endif %}>{{ option }}</option>
+        {% endfor %}
+    </select>
+    <input type="hidden" id="{{attr.name}}-name" name="name" value={{attr.name}}>
+    <input type="hidden" id="{{attr.name}}-prompt" name="prompt" value="{{attr.prompt}}">
+    <br>
+    <input type="button" onclick='location.replace("{{ display_scope }}")' value="Cancel">
+    <input type="submit" value="Update">
+</form>
+{% endfor %}
+{% endblock content %}
+{% block footer %} {{ super() }} {% endblock footer %}

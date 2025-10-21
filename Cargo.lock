@@ -500,12 +500,12 @@ dependencies = [
 
 [[package]]
 name = "canpi-config"
-version = "0.1.8"
-source = "git+https://github.com/emthornber/canpi-config.git?tag=v0.1.8#c97d82be197c65c58c709a5144219d6635d46840"
+version = "0.1.9"
 dependencies = [
  "anyhow",
  "backitup",
  "dotenv",
+ "either",
  "env_logger",
  "glob",
  "include_dir",
@@ -523,7 +523,7 @@ dependencies = [
 
 [[package]]
 name = "canpi-web-app-ssr"
-version = "0.1.9"
+version = "0.1.10"
 dependencies = [
  "actix-files",
  "actix-rt",
@@ -839,6 +839,9 @@ name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "email_address"
@@ -2249,6 +2252,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "82d20c4491bc164fa2f6c5d44565947a52ad80b9505d8e36f8d54c27c739fcd0"
 dependencies = [
  "dyn-clone",
+ "either",
  "ref-cast",
  "schemars_derive",
  "serde",

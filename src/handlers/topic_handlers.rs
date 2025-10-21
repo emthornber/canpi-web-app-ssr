@@ -16,7 +16,12 @@ pub struct AttrLine {
     tooltip: String,
     value: String,
     default: String,
-    format: String,
+    // A regular expression to validate user input.
+    // If unused this will be an empty string.
+    regexp: String,
+    // A list of possible values for this attribute.
+    // If unused this will be an empty vector.
+    select: Vec<String>,
     editable: bool,
 }
 
@@ -50,6 +55,26 @@ pub fn get_ini_file_path(app_state: &AppState) -> Result<String, Error> {
         CanPiAppError::NotFound("Cannot read attribute definitions for current_topic".to_string())
             .into(),
     )
+}
+
+// Extract the regexp string from the AttributeFormat.
+// If there is no regexp, return an empty string.
+pub fn get_regexp_format(format: AttributeFormat) -> String {
+    if let Some(regexp) = format.clone().left() {
+        regexp
+    } else {
+        "".to_string()
+    }
+}
+
+// Extract the select vector from the AttributeFormat.
+// If there is no select, return an empty vector.
+pub fn get_select_format(format: AttributeFormat) -> Vec<String> {
+    if let Some(select) = format.clone().right() {
+        select
+    } else {
+        Vec::new()
+    }
 }
 
 pub fn topic_restart(app_state: &AppState) -> Result<String, Error> {
@@ -111,7 +136,8 @@ pub async fn display_topic(
             tooltip: v.tooltip.clone(),
             value: v.current.clone(),
             default: "".to_string(),
-            format: "".to_string(),
+            regexp: "".to_string(),
+            select: Vec::new(),
             editable: v.action == ActionBehaviour::Edit,
         };
         attributes.push(attr);
@@ -147,7 +173,8 @@ pub async fn edit_topic(
             tooltip: v.tooltip.clone(),
             value: v.current.clone(),
             default: v.default.clone(),
-            format: v.format.clone(),
+            regexp: get_regexp_format(v.format.clone()),
+            select: get_select_format(v.format.clone()),
             editable: false,
         };
         attributes.push(attr);
@@ -160,8 +187,13 @@ pub async fn edit_topic(
             ctx.insert("topic_title", "No topic selected");
         };
         ctx.insert("configuration", &attributes);
+        // Choose the edit template based on whether the attribute uses regexp or select.
+        let mut edit_html_file = "topic_edit_regexp.html";
+        if let Some(_) = v.format.clone().right() {
+            edit_html_file = "topic_edit_select.html";
+        }
         let s = tmpl
-            .render("topic_edit.html", &ctx)
+            .render(edit_html_file, &ctx)
             .map_err(|_| CanPiAppError::TeraError("topic_edit.html".to_string()))?;
         Ok(HttpResponse::Ok().content_type("text/html").body(s))
     } else {
