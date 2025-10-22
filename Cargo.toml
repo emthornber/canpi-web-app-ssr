@@ -1,6 +1,6 @@
 [package]
 name = "canpi-web-app-ssr"
-version = "0.1.10"
+version = "0.2.0"
 authors = ["Mark Thornber <mark.thornber@merg.org.uk>"]
 edition = "2021"
 license = "GPL-3.0-0r-later"
