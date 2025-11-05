@@ -186,14 +186,14 @@ pub async fn edit_topic(
         };
         ctx.insert("configuration", &attributes);
         // Choose the edit template based on whether the attribute uses regexp or vector.
-        let mut edit_html_file = "topic_edit_pattern.html";
+        let mut edit_html_file = "topic_edit_regexp.html";
         match v.format {
             AttributeFormat::Vector(_) => edit_html_file = "topic_edit_vector.html",
             _ => (),
         }
         let s = tmpl
             .render(edit_html_file, &ctx)
-            .map_err(|_| CanPiAppError::TeraError("topic_edit.html".to_string()))?;
+            .map_err(|_| CanPiAppError::TeraError(edit_html_file.to_string()))?;
         Ok(HttpResponse::Ok().content_type("text/html").body(s))
     } else {
         let s = format!("Internal error: {} not found", attr_id.name).to_string();
