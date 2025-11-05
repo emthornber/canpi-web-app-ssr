@@ -18,7 +18,7 @@ pub struct AttrLine {
     default: String,
     // A regular expression to validate user input.
     // If unused this will be an empty string.
-    regexp: String,
+    pattern: String,
     // A list of possible values for this attribute.
     // If unused this will be an empty vector.
     select: Vec<String>,
@@ -59,21 +59,19 @@ pub fn get_ini_file_path(app_state: &AppState) -> Result<String, Error> {
 
 // Extract the regexp string from the AttributeFormat.
 // If there is no regexp, return an empty string.
-pub fn get_regexp_format(format: AttributeFormat) -> String {
-    if let Some(regexp) = format.clone().left() {
-        regexp
-    } else {
-        "".to_string()
+pub fn get_pattern_format(format: AttributeFormat) -> String {
+    match format {
+        AttributeFormat::RegExp(ref re) => return re.clone(),
+        _ => return "".to_string(),
     }
 }
 
-// Extract the select vector from the AttributeFormat.
-// If there is no select, return an empty vector.
+// Extract the vector from the AttributeFormat.
+// If there is no vector, return an empty vector.
 pub fn get_select_format(format: AttributeFormat) -> Vec<String> {
-    if let Some(select) = format.clone().right() {
-        select
-    } else {
-        Vec::new()
+    match format {
+        AttributeFormat::Vector(ref vec) => return vec.clone(),
+        _ => return Vec::new(),
     }
 }
 
@@ -136,7 +134,7 @@ pub async fn display_topic(
             tooltip: v.tooltip.clone(),
             value: v.current.clone(),
             default: "".to_string(),
-            regexp: "".to_string(),
+            pattern: "".to_string(),
             select: Vec::new(),
             editable: v.action == ActionBehaviour::Edit,
         };
@@ -173,7 +171,7 @@ pub async fn edit_topic(
             tooltip: v.tooltip.clone(),
             value: v.current.clone(),
             default: v.default.clone(),
-            regexp: get_regexp_format(v.format.clone()),
+            pattern: get_pattern_format(v.format.clone()),
             select: get_select_format(v.format.clone()),
             editable: false,
         };
@@ -187,10 +185,11 @@ pub async fn edit_topic(
             ctx.insert("topic_title", "No topic selected");
         };
         ctx.insert("configuration", &attributes);
-        // Choose the edit template based on whether the attribute uses regexp or select.
-        let mut edit_html_file = "topic_edit_regexp.html";
-        if let Some(_) = v.format.clone().right() {
-            edit_html_file = "topic_edit_select.html";
+        // Choose the edit template based on whether the attribute uses regexp or vector.
+        let mut edit_html_file = "topic_edit_pattern.html";
+        match v.format {
+            AttributeFormat::Vector(_) => edit_html_file = "topic_edit_vector.html",
+            _ => (),
         }
         let s = tmpl
             .render(edit_html_file, &ctx)

@@ -1,6 +1,6 @@
 [package]
 name = "canpi-web-app-ssr"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Mark Thornber <mark.thornber@merg.org.uk>"]
 edition = "2021"
 license = "GPL-3.0-0r-later"
@@ -14,7 +14,7 @@ name = "canpi-ssr"
 path = "src/main.rs"
 
 [dependencies]
-canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.9" }
+canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.10" }
 # canpi-config = { path = "../canpi-config" }
 actix-web = "4.11.0"
 actix-files = "0.6.5"

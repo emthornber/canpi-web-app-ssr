@@ -9,8 +9,8 @@
 {% for attr in configuration %}
 <form action='{{ scope_for(scope="update") }}' method="post">
     <label for="{{attr.name}}-value">{{attr.prompt}}:</label>
-    <input type="text" id="{{attr.name}}-value" name="value" pattern="{{attr.regexp}}"
-        title="{{attr.tooltip}} ({{attr.regexp}})" value={{attr.value}}>
+    <input type="text" id="{{attr.name}}-value" name="value" pattern="{{attr.pattern}}"
+        title="{{attr.tooltip}} ({{attr.pattern}})" value={{attr.value}}>
     <input type="hidden" id="{{attr.name}}-name" name="name" value={{attr.name}}>
     <input type="hidden" id="{{attr.name}}-prompt" name="prompt" value="{{attr.prompt}}">
     <br>
