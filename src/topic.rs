@@ -278,9 +278,7 @@ mod tests {
         let packages = setup_pkgs(CFG_BAD_DATA_1);
         assert!(packages.is_some());
         let packages = packages.unwrap();
-        assert_eq!(packages.len(), 1);
-        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
-        assert!(topic.is_err());
+        assert_eq!(packages.len(), 0);
     }
 
     #[test]
@@ -291,9 +289,7 @@ mod tests {
         let packages = setup_pkgs(CFG_BAD_DATA_2);
         assert!(packages.is_some());
         let packages = packages.unwrap();
-        assert_eq!(packages.len(), 1);
-        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
-        assert!(topic.is_err());
+        assert_eq!(packages.len(), 0);
     }
 
     #[test]
@@ -304,9 +300,7 @@ mod tests {
         let packages = setup_pkgs(CFG_BAD_DATA_3);
         assert!(packages.is_some());
         let packages = packages.unwrap();
-        assert_eq!(packages.len(), 1);
-        let topic = Topic::new(&packages["autohotspot"], &"AutoHotSpot".to_string());
-        assert!(topic.is_err());
+        assert_eq!(packages.len(), 0);
     }
 
     #[test]

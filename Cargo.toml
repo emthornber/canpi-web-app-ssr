@@ -14,7 +14,7 @@ name = "canpi-ssr"
 path = "src/main.rs"
 
 [dependencies]
-canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.10" }
+canpi-config = { git = "https://github.com/emthornber/canpi-config.git", tag = "v0.1.11" }
 # canpi-config = { path = "../canpi-config" }
 actix-web = "4.11.0"
 actix-files = "0.6.5"
