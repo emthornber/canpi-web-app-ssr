@@ -1,5 +1,11 @@
 #
 
+canpi-web-app-ssr (0.2.1) bookworm; urgency=low
+
+- Issue 7 resolved
+
+-- Mark Thornber <mark.thornber@gmail.com> Sun, 09 Nov 2025 10:20:17 +0000
+
 canpi-web-app-ssr (0.1.10) bookworm; urgency=low
 
 - Issue 4 resolved
