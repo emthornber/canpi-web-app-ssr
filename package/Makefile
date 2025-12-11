@@ -13,6 +13,9 @@
 #	Added package name EV
 #	Read package architecture from build system
 #
+#	21 November, 2025 - E M Thornber
+#	Use -m option to define distribution and architecture
+#
 #	EVs required
 #	BFILE - path to canpi executable
 #	ODIR  - where to place the .deb file
@@ -23,6 +26,7 @@
 ################################################################################
 
 ARCH := $(shell dpkg-architecture --query DEB_HOST_ARCH)
+CODENAME := $(shell lsb_release -sc)
 EPM := $(shell which epm)
 PKGDEFN := $(SDIR)/package/$(PKGNAME).epm
 RM=/bin/rm -f
@@ -34,4 +38,4 @@ pkgs: portable deb
 
 deb portable :
 	sudo $(RM) $(ODIR)/$@-*.log
-	sudo $(EPM) -a $(ARCH) -f $@ -vv --output-dir $(ODIR) binary=$(BFILE) srcdir=$(SDIR) version=$(VERS) $(PKGNAME) $(PKGDEFN) 2>&1 | tee $(ODIR)/$@-$(TS).log
+	sudo $(EPM) -a $(ARCH) -f $@ -m $(CODENAME)-$(ARCH) -vv --output-dir $(ODIR) binary=$(BFILE) srcdir=$(SDIR) version=$(VERS) $(PKGNAME) $(PKGDEFN) 2>&1 | tee $(ODIR)/$@-$(TS).log
