@@ -1,5 +1,11 @@
 #
 
+canpi-web-app-ssr (0.2.2) bookworm; urgency=low
+
+- Changed package file name to remove Linux version and add PiOS distribution
+
+-- Mark Thornber <mark.thornber@gmail.com> Thu, 11 Dec 2025 13:12:44 +0000
+
 canpi-web-app-ssr (0.2.1) bookworm; urgency=low
 
 - Issue 7 resolved
