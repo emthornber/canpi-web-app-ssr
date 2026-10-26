@@ -25,7 +25,7 @@ documents: \
 	changelog.Debian.gz
 
 changelog.Debian.gz: CHANGES.md
-	gzip -c $< > $@
+	markdown-it $< | lynx -stdin -dump -nolist -nomargins | gzip > $@
  
 package: release documents
 	$(MAKE) -f $@/Makefile pkgs
