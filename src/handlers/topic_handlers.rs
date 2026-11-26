@@ -1,5 +1,6 @@
 use actix_web::{web, Error, HttpResponse, Result};
 use canpi_config::*;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::sync::Mutex;
@@ -72,6 +73,33 @@ pub fn get_select_format(format: AttributeFormat) -> Vec<String> {
     match format {
         AttributeFormat::Vector(ref vec) => return vec.clone(),
         _ => return Vec::new(),
+    }
+}
+
+/// Check a value sent from the edit form against the attribute's definition.
+///
+/// The form's pattern is checked only by the browser, and a request can be sent without the
+/// form, so the action and format are checked again here before the value is stored.
+pub fn check_value(attr: &Attribute, value: &str) -> Result<(), String> {
+    if attr.action != ActionBehaviour::Edit {
+        return Err("this item cannot be changed".to_string());
+    }
+    if value.chars().any(|c| c.is_control()) {
+        return Err("the value contains a control character".to_string());
+    }
+    match &attr.format {
+        AttributeFormat::RegExp(re) => match Regex::new(&format!("^(?:{})$", re)) {
+            Ok(r) if r.is_match(value) => Ok(()),
+            Ok(_) => Err(format!("the value does not match the pattern {}", re)),
+            Err(_) => Err(format!("the pattern {} in the definition is not valid", re)),
+        },
+        AttributeFormat::Vector(options) => {
+            if options.iter().any(|o| o == value) {
+                Ok(())
+            } else {
+                Err("the value is not one of the choices".to_string())
+            }
+        }
     }
 }
 
@@ -215,6 +243,13 @@ pub async fn update_topic(
     let attr_defn = get_mut_attr_defns(&mut app_state)?;
     let attr = attr_defn.read_attribute(attr_name.clone());
     if let Some(aref) = attr {
+        if let Err(reason) = check_value(aref, &current_value) {
+            log::warn!("{} not changed: {}", attr_name, reason);
+            _s = format!("{} not changed: {}", aref.prompt, reason);
+            return Ok(HttpResponse::BadRequest()
+                .content_type("text/html")
+                .body(_s));
+        }
         let mut a = aref.clone();
         a.current = current_value.to_string();
         let _ = attr_defn.write_attribute(attr_name.clone(), &a);
@@ -292,4 +327,82 @@ pub async fn restart_topic(
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+
+    fn attribute(format: AttributeFormat, action: ActionBehaviour) -> Attribute {
+        Attribute {
+            prompt: "Port".to_string(),
+            tooltip: "".to_string(),
+            current: "5555".to_string(),
+            default: "5555".to_string(),
+            format,
+            action,
+        }
+    }
+
+    #[test]
+    fn check_value_pattern() {
+        let a = attribute(
+            AttributeFormat::RegExp("[0-9]{4}".to_string()),
+            ActionBehaviour::Edit,
+        );
+        assert!(check_value(&a, "5550").is_ok());
+        assert!(check_value(&a, "555").is_err());
+        assert!(
+            check_value(&a, "55500").is_err(),
+            "pattern must match the whole value"
+        );
+        assert!(check_value(&a, "5550;reboot").is_err());
+        assert!(check_value(&a, "").is_err());
+    }
+
+    #[test]
+    fn check_value_alternatives_anchored() {
+        let a = attribute(
+            AttributeFormat::RegExp("[1-9]|1[0-3]".to_string()),
+            ActionBehaviour::Edit,
+        );
+        assert!(check_value(&a, "6").is_ok());
+        assert!(check_value(&a, "13").is_ok());
+        assert!(check_value(&a, "14").is_err());
+        assert!(check_value(&a, "6x").is_err());
+    }
+
+    #[test]
+    fn check_value_choices() {
+        let a = attribute(
+            AttributeFormat::Vector(vec!["WARN".to_string(), "INFO".to_string()]),
+            ActionBehaviour::Edit,
+        );
+        assert!(check_value(&a, "INFO").is_ok());
+        assert!(check_value(&a, "DEBUG").is_err());
+    }
+
+    #[test]
+    fn check_value_only_editable_items() {
+        let pattern = AttributeFormat::RegExp(".*".to_string());
+        assert!(check_value(&attribute(pattern.clone(), ActionBehaviour::Display), "x").is_err());
+        assert!(check_value(&attribute(pattern.clone(), ActionBehaviour::Hide), "x").is_err());
+        assert!(check_value(&attribute(pattern, ActionBehaviour::Edit), "x").is_ok());
+    }
+
+    #[test]
+    fn check_value_rejects_control_characters() {
+        let a = attribute(
+            AttributeFormat::RegExp(".*".to_string()),
+            ActionBehaviour::Edit,
+        );
+        assert!(check_value(&a, "a\nb=1").is_err());
+        assert!(check_value(&a, "a\rb").is_err());
+    }
+
+    #[test]
+    fn check_value_invalid_pattern() {
+        let a = attribute(
+            AttributeFormat::RegExp("[1-9])|(1[0-3])".to_string()),
+            ActionBehaviour::Edit,
+        );
+        assert!(check_value(&a, "6").is_err());
+    }
+}

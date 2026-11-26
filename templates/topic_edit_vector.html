@@ -14,7 +14,7 @@
         <option value="{{ option }}" {% if option==attr.value %}selected{% endif %}>{{ option }}</option>
         {% endfor %}
     </select>
-    <input type="hidden" id="{{attr.name}}-name" name="name" value={{attr.name}}>
+    <input type="hidden" id="{{attr.name}}-name" name="name" value="{{attr.name}}">
     <input type="hidden" id="{{attr.name}}-prompt" name="prompt" value="{{attr.prompt}}">
     <br><br>
     <input type="button" onclick='location.replace("{{ display_scope }}")' value="Cancel">

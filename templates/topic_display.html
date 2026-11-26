@@ -29,7 +29,7 @@
             <td>
                 {% if attr.editable %}
                 <form action='{{ edit_scope }}' method="get">
-                    <input type="hidden" id="{{attr.name}}" name="name" value={{attr.name}}>
+                    <input type="hidden" id="{{attr.name}}" name="name" value="{{attr.name}}">
                     <input type="submit" value="Edit">
                 </form>
                 {% else %}
